@@ -1,9 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
 using SportsComplex.API.Api.JSend;
+using SportsComplex.API.Api.Requests;
 using SportsComplex.Logic.Exceptions;
 using SportsComplex.Logic.Interfaces;
 using SportsComplex.Logic.Models;
+using SportsComplex.Repository.Entities;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace SportsComplex.API.Controllers
@@ -20,10 +22,26 @@ namespace SportsComplex.API.Controllers
             _guardianLogic = guardianLogic;
         }
 
+        [HttpGet]
+        [SwaggerOperation(
+            Summary = "Gets guardians from database")]
+        public async Task<IActionResult> GetGuardiansAsync([FromQuery] GetGuardianQuery query)
+        {
+            var filters = new GuardianQuery
+            {
+                Count = query.Count,
+                Descending = query.Descending,
+                OrderBy = query.OrderBy
+            };
+
+            var data = await _guardianLogic.GetGuardiansAsync(filters);
+            return Ok(new JSendResponse(data));
+        }
+
         [HttpGet("{guardianId:int}")]
         [SwaggerOperation(
             Summary = "Gets guardians from database")]
-        public async Task<IActionResult> GetGuardianAsync([FromRoute] int guardianId)
+        public async Task<IActionResult> GetGuardianByIdAsync([FromRoute] int guardianId)
         {
             try
             {

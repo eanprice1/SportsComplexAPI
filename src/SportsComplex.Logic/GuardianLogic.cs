@@ -25,6 +25,11 @@ namespace SportsComplex.Logic
             _guardianValidatorWithIdCheck = guardianValidatorWithIdCheck;
         }
 
+        public async Task<List<Guardian>> GetGuardiansAsync(GuardianQuery filters)
+        {
+            return await _guardianReadRepo.GetGuardiansAsync(filters);
+        }
+
         public async Task<Guardian> GetGuardianByIdAsync(int guardianId)
         {
             if (guardianId <= 0)
