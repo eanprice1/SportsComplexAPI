@@ -23,6 +23,18 @@ namespace SportsComplex.Repository
                 .WithMany(x => x.HomeMatches)
                 .HasForeignKey(x => x.HomeTeamId)
                 .IsRequired();
+
+            modelBuilder.Entity<GuardianDb>()
+                .HasMany(x => x.Players)
+                .WithOne(x => x.Guardian)
+                .HasForeignKey(x => x.GuardianId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<GuardianDb>()
+                .HasMany(x => x.EmergencyContacts)
+                .WithOne(x => x.Guardian)
+                .HasForeignKey(x => x.GuardianId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
 
         public DbSet<GuardianDb> Guardian { get; set; }

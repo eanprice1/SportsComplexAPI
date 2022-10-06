@@ -1,4 +1,5 @@
-﻿using SportsComplex.Logic.Exceptions;
+﻿using System.Runtime.InteropServices;
+using SportsComplex.Logic.Exceptions;
 using SportsComplex.Logic.Interfaces;
 using SportsComplex.Logic.Models;
 using SportsComplex.Logic.Repositories;
@@ -11,12 +12,17 @@ namespace SportsComplex.Logic
         private readonly IGuardianReadRepo _guardianReadRepo;
         private readonly IGuardianWriteRepo _guardianWriteRepo;
         private readonly GuardianValidator _guardianValidator;
+        private readonly GuardianValidatorWithIdCheck _guardianValidatorWithIdCheck;
 
-        public GuardianLogic(IGuardianReadRepo guardianReadRepo, IGuardianWriteRepo guardianWriteRepo, GuardianValidator guardianValidator)
+        public GuardianLogic(IGuardianReadRepo guardianReadRepo,
+            IGuardianWriteRepo guardianWriteRepo,
+            GuardianValidator guardianValidator,
+            GuardianValidatorWithIdCheck guardianValidatorWithIdCheck)
         {
             _guardianReadRepo = guardianReadRepo;
             _guardianWriteRepo = guardianWriteRepo;
             _guardianValidator = guardianValidator;
+            _guardianValidatorWithIdCheck = guardianValidatorWithIdCheck;
         }
 
         public async Task<Guardian> GetGuardianByIdAsync(int guardianId)
@@ -36,15 +42,37 @@ namespace SportsComplex.Logic
             return await _guardianWriteRepo.InsertGuardianAsync(guardian);
         }
 
-        private async Task Validate(Guardian guardian)
+        public async Task<Guardian> UpdateGuardianAsync(Guardian guardian)
+        {
+            await Validate(guardian, true);
+
+            return await _guardianWriteRepo.UpdateGuardianAsync(guardian);
+        }
+
+        public async Task DeleteGuardianAsync(int guardianId)
+        {
+            await _guardianWriteRepo.DeleteGuardianAsync(guardianId);
+        }
+
+        private async Task Validate(Guardian guardian, bool checkId=false)
         {
             if (guardian == null)
                 throw new ArgumentNullException(nameof(guardian));
 
-            var result = await _guardianValidator.ValidateAsync(guardian);
+            if (checkId)
+            {
+                var result = await _guardianValidatorWithIdCheck.ValidateAsync(guardian);
 
-            if (!result.IsValid)
-                throw new InvalidRequestException(result.ToString());
+                if (!result.IsValid)
+                    throw new InvalidRequestException(result.ToString());
+            }
+            else
+            {
+                var result = await _guardianValidator.ValidateAsync(guardian);
+
+                if (!result.IsValid)
+                    throw new InvalidRequestException(result.ToString());
+            }
         }
     }
 }

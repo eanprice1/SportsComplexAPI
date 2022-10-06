@@ -23,10 +23,6 @@ namespace SportsComplex.API.Controllers
         [HttpGet("{guardianId:int}")]
         [SwaggerOperation(
             Summary = "Gets guardians from database")]
-        [SwaggerResponse(StatusCodes.Status200OK, "Successfully returns guardians information.", typeof(JSendResponse))]
-        [SwaggerResponse(StatusCodes.Status400BadRequest, "Bad request with description of error.", typeof(JSendResponse))]
-        [SwaggerResponse(StatusCodes.Status404NotFound, "The guardian was not found.", typeof(JSendResponse))]
-        [SwaggerResponse(StatusCodes.Status500InternalServerError, "Unhandled exception was thrown.", typeof(JSendResponse))]
         public async Task<IActionResult> GetGuardianAsync([FromRoute] int guardianId)
         {
             try
@@ -49,13 +45,11 @@ namespace SportsComplex.API.Controllers
         [HttpPost]
         [SwaggerOperation(
             Summary = "Inserts a new guardian into the database")]
-        [SwaggerResponse(StatusCodes.Status200OK, "Successfully inserts new guardian into database.", typeof(JSendResponse))]
-        [SwaggerResponse(StatusCodes.Status400BadRequest, "Bad request with description of error.", typeof(JSendResponse))]
-        [SwaggerResponse(StatusCodes.Status500InternalServerError, "Unhandled exception was thrown", typeof(JSendResponse))]
-        public async Task<IActionResult> AddGuardianAsync([FromBody] Guardian guardian)
+        public async Task<IActionResult> AddGuardianAsync([FromBody] GuardianRequest request)
         {
             try
             {
+                var guardian = Map(request);
                 var data = await _guardianLogic.AddGuardianAsync(guardian);
                 return Ok(new JSendResponse(data));
             }
@@ -69,6 +63,67 @@ namespace SportsComplex.API.Controllers
                     Message = ex.Message
                 });
             }
+        }
+
+        [HttpPut("{guardianId:int}")]
+        [SwaggerOperation(
+            Summary = "Updates an existing guardian in the database")]
+        public async Task<IActionResult> UpdateGuardianAsync([FromRoute] int guardianId, [FromBody] GuardianRequest request)
+        {
+            try
+            {
+                var guardian = Map(request, guardianId);
+                var data = await _guardianLogic.UpdateGuardianAsync(guardian);
+
+                return Ok(new JSendResponse(data));
+            }catch(ArgumentNullException ex)
+            {
+                Log.Warning(ex, "Guardian cannot be null. See exception for details.");
+
+                return BadRequest(new JSendResponse
+                {
+                    Status = JSendStatus.Fail,
+                    Message = ex.Message
+                });
+            }
+        }
+
+        [HttpDelete("{guardianId:int}")]
+        [SwaggerOperation(
+            Summary = "Deletes an existing guardian in the database")]
+        public async Task<IActionResult> DeleteGuardianAsync([FromRoute] int guardianId)
+        {
+            try
+            {
+                await _guardianLogic.DeleteGuardianAsync(guardianId);
+
+                return Ok(new JSendResponse());
+            }
+            catch (ArgumentNullException ex)
+            {
+                Log.Warning(ex, "Guardian cannot be null. See exception for details.");
+
+                return BadRequest(new JSendResponse
+                {
+                    Status = JSendStatus.Fail,
+                    Message = ex.Message
+                });
+            }
+        }
+
+        private static Guardian Map(GuardianRequest request, int guardianId=0)
+        {
+            return new Guardian
+            {
+                Id = guardianId,
+                FirstName = request.FirstName,
+                LastName = request.LastName,
+                BirthDate = request.BirthDate,
+                PhoneNumber = request.PhoneNumber,
+                Email = request.Email,
+                Address = request.Address,
+                OtherAddress = request.OtherAddress
+            };
         }
     }
 }

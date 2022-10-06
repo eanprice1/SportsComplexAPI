@@ -61,6 +61,7 @@ namespace SportsComplex.API
             //Logic
             services.AddTransient<IGuardianLogic, GuardianLogic>();
             services.AddTransient<GuardianValidator>();
+            services.AddTransient<GuardianValidatorWithIdCheck>();
 
         }
 

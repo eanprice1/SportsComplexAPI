@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Security.Cryptography.X509Certificates;
+using Microsoft.EntityFrameworkCore;
 using SportsComplex.Logic.Exceptions;
 using SportsComplex.Logic.Models;
 using SportsComplex.Logic.Repositories;
@@ -31,14 +32,64 @@ namespace SportsComplex.Repository.Write
             catch (DbUpdateException ex)
             {
                 throw new DbWriteEntityException(
-                    "Could not inset guardian into database. See inner exception for details.", ex);
+                    "Could not insert guardian into database. See inner exception for details.", ex);
             }
+        }
+
+        public async Task<Guardian> UpdateGuardianAsync(Guardian guardian)
+        {
+            await using var context = new SportsComplexDbContext(_dbContextOptions);
+
+            var guardianToUpdate = Map(guardian);
+            context.Update(guardianToUpdate);
+
+            try
+            {
+                await context.SaveChangesAsync();
+                return guardian;
+            }
+            catch (DbUpdateException ex)
+            {
+                throw new DbWriteEntityException(
+                    "Could not update guardian or guardian does not exist in database. See inner exception for details.", ex);
+            }
+        }
+
+        public async Task DeleteGuardianAsync(int guardianId)
+        {
+            await using var context = new SportsComplexDbContext(_dbContextOptions);
+
+            var entity = await context.Guardian
+                .Include(x => x.Players)
+                .Include(x => x.EmergencyContacts)
+                .Where(x => x.Id == guardianId)
+                .SingleOrDefaultAsync();
+
+            if (entity == null)
+                throw new EntityNotFoundException($"Guardian with Id {guardianId} does not exist.");
+
+            if (entity.Players.Any(x => x.TeamId != null))
+                throw new DbWriteEntityException("Cannot delete guardian if referenced by one or more players.");
+
+            context.Guardian.Remove(entity);
+
+            try
+            {
+                await context.SaveChangesAsync();
+            }
+            catch (DbUpdateException ex)
+            {
+                throw new DbWriteEntityException(
+                    "Could not delete guardian or guardian does not exist in database. See inner exception for details.", ex);
+            }
+
         }
 
         private static GuardianDb Map(Guardian model)
         {
             return new GuardianDb
             {
+                Id = model.Id,
                 FirstName = model.FirstName,
                 LastName = model.LastName,
                 BirthDate = model.BirthDate,
