@@ -5,7 +5,6 @@ using SportsComplex.API.Api.Requests;
 using SportsComplex.Logic.Exceptions;
 using SportsComplex.Logic.Interfaces;
 using SportsComplex.Logic.Models;
-using SportsComplex.Repository.Entities;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace SportsComplex.API.Controllers
@@ -38,19 +37,19 @@ namespace SportsComplex.API.Controllers
             return Ok(new JSendResponse(data));
         }
 
-        [HttpGet("{guardianId:int}")]
+        [HttpGet("{id:int}")]
         [SwaggerOperation(
-            Summary = "Gets guardians from database")]
-        public async Task<IActionResult> GetGuardianByIdAsync([FromRoute] int guardianId)
+            Summary = "Gets existing player from database")]
+        public async Task<IActionResult> GetGuardianByIdAsync([FromRoute] int id)
         {
             try
             {
-                var data = await _guardianLogic.GetGuardianByIdAsync(guardianId);
+                var data = await _guardianLogic.GetGuardianByIdAsync(id);
                 return Ok(new JSendResponse(data));
             }
             catch (EntityNotFoundException ex)
             {
-                Log.Error(ex, "Could not find guardian with Id {GuardianId} in database. See inner exception for details.", guardianId);
+                Log.Error(ex, "Could not find guardian with 'Id={GuardianId}' in database. See inner exception for details.", id);
 
                 return NotFound(new JSendResponse
                 {
@@ -83,39 +82,17 @@ namespace SportsComplex.API.Controllers
             }
         }
 
-        [HttpPut("{guardianId:int}")]
+        [HttpPut("{id:int}")]
         [SwaggerOperation(
             Summary = "Updates an existing guardian in the database")]
-        public async Task<IActionResult> UpdateGuardianAsync([FromRoute] int guardianId, [FromBody] GuardianRequest request)
+        public async Task<IActionResult> UpdateGuardianAsync([FromRoute] int id, [FromBody] GuardianRequest request)
         {
             try
             {
-                var guardian = Map(request, guardianId);
+                var guardian = Map(request, id);
                 var data = await _guardianLogic.UpdateGuardianAsync(guardian);
 
                 return Ok(new JSendResponse(data));
-            }catch(ArgumentNullException ex)
-            {
-                Log.Warning(ex, "Guardian cannot be null. See exception for details.");
-
-                return BadRequest(new JSendResponse
-                {
-                    Status = JSendStatus.Fail,
-                    Message = ex.Message
-                });
-            }
-        }
-
-        [HttpDelete("{guardianId:int}")]
-        [SwaggerOperation(
-            Summary = "Deletes an existing guardian in the database")]
-        public async Task<IActionResult> DeleteGuardianAsync([FromRoute] int guardianId)
-        {
-            try
-            {
-                await _guardianLogic.DeleteGuardianAsync(guardianId);
-
-                return Ok(new JSendResponse());
             }
             catch (ArgumentNullException ex)
             {
@@ -129,11 +106,33 @@ namespace SportsComplex.API.Controllers
             }
         }
 
-        private static Guardian Map(GuardianRequest request, int guardianId=0)
+        [HttpDelete("{id:int}")]
+        [SwaggerOperation(
+            Summary = "Deletes an existing guardian in the database")]
+        public async Task<IActionResult> DeleteGuardianAsync([FromRoute] int id)
+        {
+            try
+            {
+                await _guardianLogic.DeleteGuardianAsync(id);
+                return Ok(new JSendResponse());
+            }
+            catch (EntityNotFoundException ex)
+            {
+                Log.Warning(ex, "Cannot delete a guardian that does not exist in the database. See exception for details.");
+
+                return BadRequest(new JSendResponse
+                {
+                    Status = JSendStatus.Fail,
+                    Message = ex.Message
+                });
+            }
+        }
+
+        private static Guardian Map(GuardianRequest request, int id=0)
         {
             return new Guardian
             {
-                Id = guardianId,
+                Id = id,
                 FirstName = request.FirstName,
                 LastName = request.LastName,
                 BirthDate = request.BirthDate,

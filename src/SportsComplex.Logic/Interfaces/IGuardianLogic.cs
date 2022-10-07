@@ -6,7 +6,7 @@ namespace SportsComplex.Logic.Interfaces
     {
         Task<List<Guardian>> GetGuardiansAsync(GuardianQuery filters);
         Task<Guardian> GetGuardianByIdAsync(int guardianId);
-        Task<int> AddGuardianAsync(Guardian guardian);
+        Task<Guardian> AddGuardianAsync(Guardian guardian);
         Task<Guardian> UpdateGuardianAsync(Guardian guardian);
         Task DeleteGuardianAsync(int guardianId);
     }

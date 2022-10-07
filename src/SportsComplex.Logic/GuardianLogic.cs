@@ -1,5 +1,4 @@
-﻿using System.Runtime.InteropServices;
-using SportsComplex.Logic.Exceptions;
+﻿using SportsComplex.Logic.Exceptions;
 using SportsComplex.Logic.Interfaces;
 using SportsComplex.Logic.Models;
 using SportsComplex.Logic.Repositories;
@@ -9,20 +8,20 @@ namespace SportsComplex.Logic
 {
     public class GuardianLogic : IGuardianLogic
     {
+        private readonly IdValidator _idValidator;
+        private readonly GuardianValidator _guardianValidator;
         private readonly IGuardianReadRepo _guardianReadRepo;
         private readonly IGuardianWriteRepo _guardianWriteRepo;
-        private readonly GuardianValidator _guardianValidator;
-        private readonly GuardianValidatorWithIdCheck _guardianValidatorWithIdCheck;
 
-        public GuardianLogic(IGuardianReadRepo guardianReadRepo,
-            IGuardianWriteRepo guardianWriteRepo,
+        public GuardianLogic(IdValidator idValidator,
             GuardianValidator guardianValidator,
-            GuardianValidatorWithIdCheck guardianValidatorWithIdCheck)
+            IGuardianReadRepo guardianReadRepo,
+            IGuardianWriteRepo guardianWriteRepo)
         {
+            _idValidator = idValidator;
+            _guardianValidator = guardianValidator;
             _guardianReadRepo = guardianReadRepo;
             _guardianWriteRepo = guardianWriteRepo;
-            _guardianValidator = guardianValidator;
-            _guardianValidatorWithIdCheck = guardianValidatorWithIdCheck;
         }
 
         public async Task<List<Guardian>> GetGuardiansAsync(GuardianQuery filters)
@@ -33,24 +32,22 @@ namespace SportsComplex.Logic
         public async Task<Guardian> GetGuardianByIdAsync(int guardianId)
         {
             if (guardianId <= 0)
-            {
                 throw new InvalidRequestException("'GuardianId' must be greater than 0.");
-            }
 
             return await _guardianReadRepo.GetGuardianByIdAsync(guardianId);
         }
 
-        public async Task<int> AddGuardianAsync(Guardian guardian)
+        public async Task<Guardian> AddGuardianAsync(Guardian guardian)
         {
             await Validate(guardian);
+            guardian.Id = await _guardianWriteRepo.InsertGuardianAsync(guardian);
 
-            return await _guardianWriteRepo.InsertGuardianAsync(guardian);
+            return guardian;
         }
 
         public async Task<Guardian> UpdateGuardianAsync(Guardian guardian)
         {
             await Validate(guardian, true);
-
             return await _guardianWriteRepo.UpdateGuardianAsync(guardian);
         }
 
@@ -64,16 +61,14 @@ namespace SportsComplex.Logic
             if (guardian == null)
                 throw new ArgumentNullException(nameof(guardian));
 
+            var result = await _guardianValidator.ValidateAsync(guardian);
+
+            if (!result.IsValid)
+                throw new InvalidRequestException(result.ToString());
+
             if (checkId)
             {
-                var result = await _guardianValidatorWithIdCheck.ValidateAsync(guardian);
-
-                if (!result.IsValid)
-                    throw new InvalidRequestException(result.ToString());
-            }
-            else
-            {
-                var result = await _guardianValidator.ValidateAsync(guardian);
+                result = await _idValidator.ValidateAsync(guardian);
 
                 if (!result.IsValid)
                     throw new InvalidRequestException(result.ToString());

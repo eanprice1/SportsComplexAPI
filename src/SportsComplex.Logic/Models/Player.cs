@@ -2,15 +2,14 @@
 
 namespace SportsComplex.Logic.Models
 {
-    public class Guardian : IModel
+    public class Player : IModel
     {
         public int Id { get; set; }
+        public int? TeamId { get; set; }
+        public int GuardianId { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public DateTime BirthDate { get; set; }
-        public string PhoneNumber { get; set; }
-        public string Email { get; set; }
-        public string Address { get; set; }
-        public string? OtherAddress { get; set; }
+        public int Age { get; set; }
     }
 }

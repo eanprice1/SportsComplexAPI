@@ -1,4 +1,4 @@
-﻿namespace SportsComplex.Logic.Models
+﻿namespace SportsComplex.API.Api.Requests
 {
     public class GuardianRequest
     {

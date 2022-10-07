@@ -1,5 +1,4 @@
-﻿using System.Security.Cryptography.X509Certificates;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using SportsComplex.Logic.Exceptions;
 using SportsComplex.Logic.Models;
 using SportsComplex.Logic.Repositories;
@@ -19,7 +18,6 @@ namespace SportsComplex.Repository.Write
         public async Task<int> InsertGuardianAsync(Guardian guardian)
         {
             await using var context = new SportsComplexDbContext(_dbContextOptions);
-
             var guardianToInsert = Map(guardian);
 
             await context.Guardian.AddAsync(guardianToInsert);
@@ -39,9 +37,9 @@ namespace SportsComplex.Repository.Write
         public async Task<Guardian> UpdateGuardianAsync(Guardian guardian)
         {
             await using var context = new SportsComplexDbContext(_dbContextOptions);
-
             var guardianToUpdate = Map(guardian);
-            context.Update(guardianToUpdate);
+
+            context.Guardian.Update(guardianToUpdate);
 
             try
             {
@@ -51,7 +49,7 @@ namespace SportsComplex.Repository.Write
             catch (DbUpdateException ex)
             {
                 throw new DbWriteEntityException(
-                    "Could not update guardian or guardian does not exist in database. See inner exception for details.", ex);
+                    "Could not update guardian. Guardian may not exist in database. See inner exception for details.", ex);
             }
         }
 
@@ -66,7 +64,7 @@ namespace SportsComplex.Repository.Write
                 .SingleOrDefaultAsync();
 
             if (entity == null)
-                throw new EntityNotFoundException($"Guardian with Id {guardianId} does not exist.");
+                throw new EntityNotFoundException($"Guardian with 'Id={guardianId}' does not exist.");
 
             if (entity.Players.Any(x => x.TeamId != null))
                 throw new DbWriteEntityException("Cannot delete guardian if referenced by one or more players.");
@@ -80,9 +78,8 @@ namespace SportsComplex.Repository.Write
             catch (DbUpdateException ex)
             {
                 throw new DbWriteEntityException(
-                    "Could not delete guardian or guardian does not exist in database. See inner exception for details.", ex);
+                    "Could not delete guardian. See inner exception for details.", ex);
             }
-
         }
 
         private static GuardianDb Map(Guardian model)

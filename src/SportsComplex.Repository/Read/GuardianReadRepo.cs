@@ -41,7 +41,7 @@ namespace SportsComplex.Repository.Read
                 .FirstOrDefaultAsync();
 
             if (entity == null)
-                throw new EntityNotFoundException($"Could not find guardian with Id {guardianId} in database.");
+                throw new EntityNotFoundException($"Could not find guardian with 'Id={guardianId}' in database.");
 
             return Map(entity);
         }

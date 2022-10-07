@@ -8,6 +8,7 @@ using SportsComplex.API.Api.JSend;
 using SportsComplex.Logic;
 using SportsComplex.Logic.Exceptions;
 using SportsComplex.Logic.Interfaces;
+using SportsComplex.Logic.Models;
 using SportsComplex.Logic.Repositories;
 using SportsComplex.Logic.Validators;
 using SportsComplex.Repository;
@@ -57,11 +58,16 @@ namespace SportsComplex.API
             //Repos
             services.AddTransient<IGuardianReadRepo, GuardianReadRepo>();
             services.AddTransient<IGuardianWriteRepo, GuardianWriteRepo>();
+            services.AddTransient<IPlayerReadRepo, PlayerReadRepo>();
+            services.AddTransient<IPlayerWriteRepo, PlayerWriteRepo>();
+            services.AddTransient<ITeamReadRepo, TeamReadRepo>();
 
             //Logic
+            services.AddTransient<IdValidator>();
             services.AddTransient<IGuardianLogic, GuardianLogic>();
             services.AddTransient<GuardianValidator>();
-            services.AddTransient<GuardianValidatorWithIdCheck>();
+            services.AddTransient<IPlayerLogic, PlayerLogic>();
+            services.AddTransient<PlayerValidator>();
 
         }
 
