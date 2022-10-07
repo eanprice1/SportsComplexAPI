@@ -31,6 +31,11 @@ namespace SportsComplex.Logic
             _teamReadRepo = teamReadRepo;
         }
 
+        public async Task<List<Player>> GetPlayersAsync(PlayerQuery filters)
+        {
+            return await _playerReadRepo.GetPlayersAsync(filters);
+        }
+
         public async Task<Player> GetPlayerByIdAsync(int playerId)
         {
             if(playerId <= 0)

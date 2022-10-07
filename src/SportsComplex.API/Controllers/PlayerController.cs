@@ -22,6 +22,25 @@ namespace SportsComplex.API.Controllers
             _playerLogic = playerLogic;
         }
 
+        [HttpGet]
+        [SwaggerOperation(
+            Summary = "Gets players from database")]
+        public async Task<IActionResult> GetPlayersAsync([FromQuery] GetPlayerQuery query)
+        {
+            var filters = new PlayerQuery()
+            {
+                Ids = query.Ids,
+                TeamIds = query.TeamIds,
+                GuardianIds = query.GuardianIds,
+                Count = query.Count,
+                Descending = query.Descending,
+                OrderBy = query.OrderBy
+            };
+
+            var data = await _playerLogic.GetPlayersAsync(filters);
+            return Ok(new JSendResponse(data));
+        }
+
         [HttpGet("{id:int}")]
         [SwaggerOperation(
             Summary = "Gets existing player from database")]

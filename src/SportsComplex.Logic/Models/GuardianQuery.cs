@@ -2,8 +2,9 @@
 {
     public class GuardianQuery
     {
-        public int? Count { get; set; }
-        public string? OrderBy { get; set; }
-        public bool Descending { get; set; } = false;
+        public List<int> Ids { get; init; } = new();
+        public int? Count { get; init; }
+        public string? OrderBy { get; init; }
+        public bool Descending { get; init; }
     }
 }

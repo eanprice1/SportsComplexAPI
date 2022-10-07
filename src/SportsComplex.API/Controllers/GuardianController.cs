@@ -28,6 +28,7 @@ namespace SportsComplex.API.Controllers
         {
             var filters = new GuardianQuery
             {
+                Ids = query.Ids,
                 Count = query.Count,
                 Descending = query.Descending,
                 OrderBy = query.OrderBy
@@ -39,7 +40,7 @@ namespace SportsComplex.API.Controllers
 
         [HttpGet("{id:int}")]
         [SwaggerOperation(
-            Summary = "Gets existing player from database")]
+            Summary = "Gets existing guardian from database")]
         public async Task<IActionResult> GetGuardianByIdAsync([FromRoute] int id)
         {
             try

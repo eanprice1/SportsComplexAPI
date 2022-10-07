@@ -2,8 +2,8 @@
 using SportsComplex.Logic.Exceptions;
 using SportsComplex.Logic.Models;
 using SportsComplex.Logic.Repositories;
-using SportsComplex.Logic.Utilities.OrderByColumns;
 using SportsComplex.Repository.Entities;
+using static SportsComplex.Logic.Utilities.OrderByColumns.GuardianColumns;
 
 namespace SportsComplex.Repository.Read
 {
@@ -21,6 +21,11 @@ namespace SportsComplex.Repository.Read
             await using var context = new SportsComplexDbContext(_dbContextOptions);
 
             var sqlQuery = context.Guardian.AsNoTracking();
+
+            if (filters.Ids.Any())
+            {
+                sqlQuery = sqlQuery.Where(x => filters.Ids.Contains(x.Id));
+            }
 
             sqlQuery = OrderBy(sqlQuery, filters.OrderBy, filters.Descending);
 
@@ -50,35 +55,34 @@ namespace SportsComplex.Repository.Read
         {
             return orderBy?.ToLower() switch
             {
-                GuardianColumns.Id => descending
+                Id => descending
                     ? sqlQuery.OrderByDescending(x => x.Id)
                     : sqlQuery.OrderBy(x => x.Id),
-                GuardianColumns.FirstName => descending
+                FirstName => descending
                     ? sqlQuery.OrderByDescending(x => x.FirstName)
                     : sqlQuery.OrderBy(x => x.FirstName),
-                GuardianColumns.LastName => descending
+                LastName => descending
                     ? sqlQuery.OrderByDescending(x => x.LastName)
                     : sqlQuery.OrderBy(x => x.LastName),
-                GuardianColumns.BirthDate => descending
+                BirthDate => descending
                     ? sqlQuery.OrderByDescending(x => x.BirthDate)
                     : sqlQuery.OrderBy(x => x.BirthDate),
-                GuardianColumns.PhoneNumber => descending
+                PhoneNumber => descending
                     ? sqlQuery.OrderByDescending(x => x.PhoneNumber)
                     : sqlQuery.OrderBy(x => x.PhoneNumber),
-                GuardianColumns.Email => descending
+                Email => descending
                     ? sqlQuery.OrderByDescending(x => x.Email)
                     : sqlQuery.OrderBy(x => x.Email),
-                GuardianColumns.Address => descending
+                Address => descending
                     ? sqlQuery.OrderByDescending(x => x.Address)
                     : sqlQuery.OrderBy(x => x.Address),
-                GuardianColumns.OtherAddress => descending
+                OtherAddress => descending
                     ? sqlQuery.OrderByDescending(x => x.OtherAddress)
                     : sqlQuery.OrderBy(x => x.OtherAddress),
                 _ => descending
                     ? sqlQuery.OrderByDescending(x => x.Id)
                     : sqlQuery.OrderBy(x => x.Id)
             };
-                
         }
 
         private static Guardian Map(GuardianDb entity)
