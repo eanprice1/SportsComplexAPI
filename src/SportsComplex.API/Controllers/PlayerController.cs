@@ -2,7 +2,6 @@
 using Serilog;
 using SportsComplex.API.Api.JSend;
 using SportsComplex.API.Api.Requests;
-using SportsComplex.Logic;
 using SportsComplex.Logic.Exceptions;
 using SportsComplex.Logic.Interfaces;
 using SportsComplex.Logic.Models;
