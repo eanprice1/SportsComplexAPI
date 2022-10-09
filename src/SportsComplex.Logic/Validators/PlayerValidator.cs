@@ -8,6 +8,7 @@ namespace SportsComplex.Logic.Validators
         public PlayerValidator()
         {
             CascadeMode = CascadeMode.Stop;
+
             RuleFor(x => x.TeamId)
                 .GreaterThan(0).When(x => x.TeamId != null)
                 .WithMessage("'TeamId' must be greater than 0.");

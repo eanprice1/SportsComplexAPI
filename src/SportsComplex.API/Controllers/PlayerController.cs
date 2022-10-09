@@ -2,7 +2,6 @@
 using Serilog;
 using SportsComplex.API.Api.JSend;
 using SportsComplex.API.Api.Requests;
-using SportsComplex.Logic;
 using SportsComplex.Logic.Exceptions;
 using SportsComplex.Logic.Interfaces;
 using SportsComplex.Logic.Models;
@@ -15,11 +14,11 @@ namespace SportsComplex.API.Controllers
     [Produces("application/json")]
     public class PlayerController : ControllerBase
     {
-        private readonly IPlayerLogic _playerLogic;
+        private readonly IPlayerLogic _logic;
 
-        public PlayerController(IPlayerLogic playerLogic)
+        public PlayerController(IPlayerLogic logic)
         {
-            _playerLogic = playerLogic;
+            _logic = logic;
         }
 
         [HttpGet]
@@ -37,7 +36,7 @@ namespace SportsComplex.API.Controllers
                 OrderBy = query.OrderBy
             };
 
-            var data = await _playerLogic.GetPlayersAsync(filters);
+            var data = await _logic.GetPlayersAsync(filters);
             return Ok(new JSendResponse(data));
         }
 
@@ -48,12 +47,12 @@ namespace SportsComplex.API.Controllers
         {
             try
             {
-                var data = await _playerLogic.GetPlayerByIdAsync(id);
+                var data = await _logic.GetPlayerByIdAsync(id);
                 return Ok(new JSendResponse(data));
             }
             catch (EntityNotFoundException ex)
             {
-                Log.Error(ex, "Could not find guardian with 'Id={PlayerId}' in database. See inner exception for details.", id);
+                Log.Error(ex, "Could not find player with 'Id={PlayerId}' in database. See inner exception for details.", id);
 
                 return NotFound(new JSendResponse
                 {
@@ -71,7 +70,7 @@ namespace SportsComplex.API.Controllers
             try
             {
                 var player = Map(request);
-                var data = await _playerLogic.AddPlayerAsync(player);
+                var data = await _logic.AddPlayerAsync(player);
 
                 return Ok(new JSendResponse(data));
             }
@@ -95,7 +94,7 @@ namespace SportsComplex.API.Controllers
             try
             {
                 var player = Map(request, id);
-                var data = await _playerLogic.UpdatePlayerAsync(player);
+                var data = await _logic.UpdatePlayerAsync(player);
 
                 return Ok(new JSendResponse(data));
             }
@@ -118,7 +117,7 @@ namespace SportsComplex.API.Controllers
         {
             try
             {
-                await _playerLogic.DeletePlayerAsync(id);
+                await _logic.DeletePlayerAsync(id);
                 return Ok(new JSendResponse());
             }
             catch (EntityNotFoundException ex)
