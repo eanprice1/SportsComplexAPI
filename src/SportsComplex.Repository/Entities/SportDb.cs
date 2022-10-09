@@ -17,5 +17,6 @@ namespace SportsComplex.Repository.Entities
         [Column(TypeName = "Date")]
         public DateTime EndDate { get; set; }
         public List<TeamDb> Teams { get; set; }
+        public List<LocationDb> Locations { get; set; }
     }
 }

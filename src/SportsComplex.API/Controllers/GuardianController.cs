@@ -14,11 +14,11 @@ namespace SportsComplex.API.Controllers
     [Produces("application/json")]
     public class GuardianController : ControllerBase
     {
-        private readonly IGuardianLogic _guardianLogic;
+        private readonly IGuardianLogic _logic;
 
-        public GuardianController(IGuardianLogic guardianLogic)
+        public GuardianController(IGuardianLogic logic)
         {
-            _guardianLogic = guardianLogic;
+            _logic = logic;
         }
 
         [HttpGet]
@@ -34,7 +34,7 @@ namespace SportsComplex.API.Controllers
                 OrderBy = query.OrderBy
             };
 
-            var data = await _guardianLogic.GetGuardiansAsync(filters);
+            var data = await _logic.GetGuardiansAsync(filters);
             return Ok(new JSendResponse(data));
         }
 
@@ -45,7 +45,7 @@ namespace SportsComplex.API.Controllers
         {
             try
             {
-                var data = await _guardianLogic.GetGuardianByIdAsync(id);
+                var data = await _logic.GetGuardianByIdAsync(id);
                 return Ok(new JSendResponse(data));
             }
             catch (EntityNotFoundException ex)
@@ -68,7 +68,7 @@ namespace SportsComplex.API.Controllers
             try
             {
                 var guardian = Map(request);
-                var data = await _guardianLogic.AddGuardianAsync(guardian);
+                var data = await _logic.AddGuardianAsync(guardian);
                 return Ok(new JSendResponse(data));
             }
             catch (ArgumentNullException ex)
@@ -91,7 +91,7 @@ namespace SportsComplex.API.Controllers
             try
             {
                 var guardian = Map(request, id);
-                var data = await _guardianLogic.UpdateGuardianAsync(guardian);
+                var data = await _logic.UpdateGuardianAsync(guardian);
 
                 return Ok(new JSendResponse(data));
             }
@@ -114,7 +114,7 @@ namespace SportsComplex.API.Controllers
         {
             try
             {
-                await _guardianLogic.DeleteGuardianAsync(id);
+                await _logic.DeleteGuardianAsync(id);
                 return Ok(new JSendResponse());
             }
             catch (EntityNotFoundException ex)
