@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using SportsComplex.Logic.Models;
 
 namespace SportsComplex.Repository.Entities
 {
@@ -15,5 +16,6 @@ namespace SportsComplex.Repository.Entities
         public List<MatchDb> HomeMatches { get; set; }
         public List<MatchDb> AwayMatches { get; set; }
         public List<PracticeDb> Practices { get; set; }
+        public List<PlayerDb> Players { get; set; }
     }
 }   

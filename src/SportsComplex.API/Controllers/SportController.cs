@@ -63,4 +63,88 @@ public class SportController : ControllerBase
             });
         }
     }
+
+    [HttpPost]
+    [SwaggerOperation(
+        Summary = "Inserts a new sport into the database")]
+    public async Task<IActionResult> AddSportAsync([FromBody] SportRequest request)
+    {
+        try
+        {
+            var player = Map(request);
+            var data = await _logic.AddSportAsync(player);
+
+            return Ok(new JSendResponse(data));
+        }
+        catch (ArgumentNullException ex)
+        {
+            Log.Warning(ex, "Sport cannot be null. See exception for details.");
+
+            return BadRequest(new JSendResponse
+            {
+                Status = JSendStatus.Fail,
+                Message = ex.Message
+            });
+        }
+    }
+
+    [HttpPut("{id:int}")]
+    [SwaggerOperation(
+        Summary = "Updates an existing sport in the database")]
+    public async Task<IActionResult> UpdateSportAsync([FromRoute] int id, [FromBody] SportRequest request)
+    {
+        try
+        {
+            var player = Map(request, id);
+            var data = await _logic.UpdateSportAsync(player);
+
+            return Ok(new JSendResponse(data));
+        }
+        catch (ArgumentNullException ex)
+        {
+            Log.Warning(ex, "Sport cannot be null. See exception for details.");
+
+            return BadRequest(new JSendResponse
+            {
+                Status = JSendStatus.Fail,
+                Message = ex.Message
+            });
+        }
+    }
+
+    [HttpDelete("{id:int}")]
+    [SwaggerOperation(
+        Summary = "Deletes an existing sport in the database")]
+    public async Task<IActionResult> DeleteSportAsync([FromRoute] int id)
+    {
+        try
+        {
+            await _logic.DeleteSportAsync(id);
+            return Ok(new JSendResponse());
+        }
+        catch (EntityNotFoundException ex)
+        {
+            Log.Warning(ex, "Cannot delete a sport that does not exist in the database. See exception for details.");
+
+            return BadRequest(new JSendResponse
+            {
+                Status = JSendStatus.Fail,
+                Message = ex.Message
+            });
+        }
+    }
+
+    private static Sport Map(SportRequest request, int id = 0)
+    {
+        return new Sport
+        {
+            Id = id,
+            Name = request.Name,
+            Description = request.Description,
+            MinTeamSize = request.MinTeamSize,
+            MaxTeamSize = request.MaxTeamSize,
+            StartDate = request.StartDate,
+            EndDate = request.EndDate
+        };
+    }
 }

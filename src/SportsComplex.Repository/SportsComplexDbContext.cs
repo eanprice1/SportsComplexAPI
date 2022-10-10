@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using SportsComplex.Logic.Models;
 using SportsComplex.Repository.Entities;
 
 namespace SportsComplex.Repository
@@ -45,6 +46,17 @@ namespace SportsComplex.Repository
                 .HasMany(x => x.Locations)
                 .WithOne(x => x.Sport)
                 .HasForeignKey(x => x.SportId);
+
+            modelBuilder.Entity<TeamDb>()
+                .HasMany(x => x.Practices)
+                .WithOne(x => x.Team)
+                .HasForeignKey(x => x.TeamId)
+                .IsRequired();
+
+            modelBuilder.Entity<TeamDb>()
+                .HasMany(x => x.Players)
+                .WithOne(x => x.Team)
+                .HasForeignKey(x => x.TeamId);
         }
 
         public DbSet<GuardianDb> Guardian { get; set; }

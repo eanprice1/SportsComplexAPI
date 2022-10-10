@@ -8,15 +8,13 @@ namespace SportsComplex.Repository.Entities
     {
         [Key]
         public int Id { get; set; }
-        public int SportId { get; set; }
         public int TeamId { get; set; }
-        public int LocationId { get; set; }
+        public int? LocationId { get; set; }
         public string DayOfWeek { get; set; }
         [Column(TypeName = "Time")]
         public TimeSpan StartTime { get; set; }
         [Column(TypeName = "Time")]
         public TimeSpan EndTime { get; set; }
-        public SportDb Sport { get; set; }
         public TeamDb Team { get; set; }
         public LocationDb Location { get; set; }
     }
