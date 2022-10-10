@@ -39,6 +39,19 @@ public class SportWriteRepo : ISportWriteRepo
         await using var context = new SportsComplexDbContext(_dbContextOptions);
         var sportToUpdate = Map(sport);
 
+        var sportDb = await context.Sport
+            .Include(x => x.Teams)
+            .ThenInclude(x => x.Players)
+            .Where(x => x.Id == sportToUpdate.Id)
+            .FirstOrDefaultAsync();
+
+        var invalidPlayerCount = sportDb.Teams.Any(x =>
+            x.Players.Count < sportDb.MinTeamSize || x.Players.Count > sportDb.MaxTeamSize);
+
+        if (invalidPlayerCount)
+            throw new InvalidRequestException(
+                "'MinTeamSize' must be less than or equal to the player count of all existing teams. 'MaxTeamSize' must be greater than or equal to the player count of all existing teams.");
+
         context.Sport.Update(sportToUpdate);
 
         try
@@ -56,9 +69,15 @@ public class SportWriteRepo : ISportWriteRepo
     public async Task DeleteSportAsync(int sportId)
     {
         await using var context = new SportsComplexDbContext(_dbContextOptions);
+        var trx = await context.Database.BeginTransactionAsync();
 
         var entity = await context.Sport
             .Include(x => x.Teams)
+            .ThenInclude(x => x.HomeMatches)
+            .Include(x => x.Teams)
+            .ThenInclude(x => x.AwayMatches)
+            .Include(x => x.Teams)
+            .ThenInclude(x => x.Practices)
             .Include(x => x.Locations)
             .Where(x => x.Id == sportId)
             .SingleOrDefaultAsync();
@@ -66,20 +85,26 @@ public class SportWriteRepo : ISportWriteRepo
         if (entity == null)
             throw new EntityNotFoundException($"Sport with 'Id={sportId}' does not exist.");
 
-        if(entity.Teams.Any())
-            throw new DbWriteEntityException("Cannot delete sport if referenced by one or more teams.");
 
-        if(entity.Locations.Any())
-            throw new DbWriteEntityException("Cannot delete sport if referenced by one or more locations.");
+        foreach (var team in entity.Teams)
+        {
+            context.Match.RemoveRange(team.HomeMatches);
+            context.Match.RemoveRange(team.AwayMatches);
+            context.Practice.RemoveRange(team.Practices);
+        }
 
+        context.Team.RemoveRange(entity.Teams);
+        context.Location.RemoveRange(entity.Locations);
         context.Sport.Remove(entity);
 
         try
         {
             await context.SaveChangesAsync();
+            await trx.CommitAsync();
         }
         catch (DbUpdateException ex)
         {
+            await trx.RollbackAsync();
             throw new DbWriteEntityException(
                 "Could not delete sport. See inner exception for details.", ex);
         }

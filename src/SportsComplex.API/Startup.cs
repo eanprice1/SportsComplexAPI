@@ -50,6 +50,7 @@ namespace SportsComplex.API
             var sqlConnection = new SqlConnection(_configuration.GetConnectionString("SportsComplexConnection"));
             var sportsComplexDbContextOptions = new DbContextOptionsBuilder<SportsComplexDbContext>()
                 .UseSqlServer(sqlConnection)
+                .UseLoggerFactory(new LoggerFactory().AddSerilog())
                 .Options;
 
             services.AddSingleton(sportsComplexDbContextOptions);
@@ -70,6 +71,7 @@ namespace SportsComplex.API
             services.AddTransient<IPlayerLogic, PlayerLogic>();
             services.AddTransient<PlayerValidator>();
             services.AddTransient<ISportLogic, SportLogic>();
+            services.AddTransient<SportValidator>();
 
         }
 
