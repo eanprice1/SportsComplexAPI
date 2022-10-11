@@ -12,21 +12,21 @@ namespace SportsComplex.Logic
         private readonly IdValidator _idValidator;
         private readonly PlayerValidator _playerValidator;
         private readonly IPlayerReadRepo _playerReadRepo;
-        private readonly IPlayerWriteRepo _playerWriteRepo;
+        private readonly IPlayerWriteRepo _writeRepo;
         private readonly IGuardianReadRepo _guardianReadRepo;
         private readonly ITeamReadRepo _teamReadRepo;
 
         public PlayerLogic(IdValidator idValidator,
             PlayerValidator playerValidator,
             IPlayerReadRepo playerReadRepo,
-            IPlayerWriteRepo playerWriteRepo,
+            IPlayerWriteRepo writeRepo,
             IGuardianReadRepo guardianReadRepo,
             ITeamReadRepo teamReadRepo)
         {
             _idValidator = idValidator;
             _playerValidator = playerValidator;
             _playerReadRepo = playerReadRepo;
-            _playerWriteRepo = playerWriteRepo;
+            _writeRepo = writeRepo;
             _guardianReadRepo = guardianReadRepo;
             _teamReadRepo = teamReadRepo;
         }
@@ -46,27 +46,27 @@ namespace SportsComplex.Logic
 
         public async Task<Player> AddPlayerAsync(Player player)
         {
-            await Validate(player);
+            await ValidateAsync(player);
             player.Age = CalculateAge(player.BirthDate);
-            player.Id = await _playerWriteRepo.InsertPlayerAsync(player);
+            player.Id = await _writeRepo.InsertPlayerAsync(player);
 
             return player;
         }
 
         public async Task<Player> UpdatePlayerAsync(Player player)
         {
-            await Validate(player, true);
+            await ValidateAsync(player, true);
             player.Age = CalculateAge(player.BirthDate);
 
-            return await _playerWriteRepo.UpdatePlayerAsync(player);
+            return await _writeRepo.UpdatePlayerAsync(player);
         }
 
         public async Task DeletePlayerAsync(int playerId)
         {
-            await _playerWriteRepo.DeletePlayerAsync(playerId);
+            await _writeRepo.DeletePlayerAsync(playerId);
         }
 
-        private async Task Validate(Player player, bool checkId=false)
+        private async Task ValidateAsync(Player player, bool checkId=false)
         {
             if (player == null)
                 throw new ArgumentNullException(nameof(player));

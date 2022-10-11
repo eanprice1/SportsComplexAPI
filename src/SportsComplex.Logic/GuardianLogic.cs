@@ -10,23 +10,23 @@ namespace SportsComplex.Logic
     {
         private readonly IdValidator _idValidator;
         private readonly GuardianValidator _guardianValidator;
-        private readonly IGuardianReadRepo _guardianReadRepo;
-        private readonly IGuardianWriteRepo _guardianWriteRepo;
+        private readonly IGuardianReadRepo _readRepo;
+        private readonly IGuardianWriteRepo _writeRepo;
 
         public GuardianLogic(IdValidator idValidator,
             GuardianValidator guardianValidator,
-            IGuardianReadRepo guardianReadRepo,
-            IGuardianWriteRepo guardianWriteRepo)
+            IGuardianReadRepo readRepo,
+            IGuardianWriteRepo writeRepo)
         {
             _idValidator = idValidator;
             _guardianValidator = guardianValidator;
-            _guardianReadRepo = guardianReadRepo;
-            _guardianWriteRepo = guardianWriteRepo;
+            _readRepo = readRepo;
+            _writeRepo = writeRepo;
         }
 
         public async Task<List<Guardian>> GetGuardiansAsync(GuardianQuery filters)
         {
-            return await _guardianReadRepo.GetGuardiansAsync(filters);
+            return await _readRepo.GetGuardiansAsync(filters);
         }
 
         public async Task<Guardian> GetGuardianByIdAsync(int guardianId)
@@ -34,29 +34,29 @@ namespace SportsComplex.Logic
             if (guardianId <= 0)
                 throw new InvalidRequestException("'GuardianId' must be greater than 0.");
 
-            return await _guardianReadRepo.GetGuardianByIdAsync(guardianId);
+            return await _readRepo.GetGuardianByIdAsync(guardianId);
         }
 
         public async Task<Guardian> AddGuardianAsync(Guardian guardian)
         {
-            await Validate(guardian);
-            guardian.Id = await _guardianWriteRepo.InsertGuardianAsync(guardian);
+            await ValidateAsync(guardian);
+            guardian.Id = await _writeRepo.InsertGuardianAsync(guardian);
 
             return guardian;
         }
 
         public async Task<Guardian> UpdateGuardianAsync(Guardian guardian)
         {
-            await Validate(guardian, true);
-            return await _guardianWriteRepo.UpdateGuardianAsync(guardian);
+            await ValidateAsync(guardian, true);
+            return await _writeRepo.UpdateGuardianAsync(guardian);
         }
 
         public async Task DeleteGuardianAsync(int guardianId)
         {
-            await _guardianWriteRepo.DeleteGuardianAsync(guardianId);
+            await _writeRepo.DeleteGuardianAsync(guardianId);
         }
 
-        private async Task Validate(Guardian guardian, bool checkId=false)
+        private async Task ValidateAsync(Guardian guardian, bool checkId=false)
         {
             if (guardian == null)
                 throw new ArgumentNullException(nameof(guardian));

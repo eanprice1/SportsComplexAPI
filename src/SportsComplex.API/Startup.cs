@@ -63,16 +63,18 @@ namespace SportsComplex.API
             services.AddTransient<ISportReadRepo, SportReadRepo>();
             services.AddTransient<ISportWriteRepo, SportWriteRepo>();
             services.AddTransient<ITeamReadRepo, TeamReadRepo>();
+            services.AddTransient<ITeamWriteRepo, TeamWriteRepo>();
 
             //Logic
             services.AddTransient<IdValidator>();
-            services.AddTransient<IGuardianLogic, GuardianLogic>();
             services.AddTransient<GuardianValidator>();
-            services.AddTransient<IPlayerLogic, PlayerLogic>();
             services.AddTransient<PlayerValidator>();
-            services.AddTransient<ISportLogic, SportLogic>();
             services.AddTransient<SportValidator>();
-
+            services.AddTransient<TeamValidator>();
+            services.AddTransient<IGuardianLogic, GuardianLogic>();
+            services.AddTransient<IPlayerLogic, PlayerLogic>();
+            services.AddTransient<ISportLogic, SportLogic>();
+            services.AddTransient<ITeamLogic, TeamLogic>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

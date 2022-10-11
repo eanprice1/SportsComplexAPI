@@ -19,30 +19,21 @@ namespace SportsComplex.Repository.Read
         public async Task<List<Player>> GetPlayersAsync(PlayerQuery filters)
         {
             await using var context = new SportsComplexDbContext(_dbContextOptions);
-
             var sqlQuery = context.Player.AsNoTracking();
 
             if (filters.Ids.Any())
-            {
                 sqlQuery = sqlQuery.Where(x => filters.Ids.Contains(x.Id));
-            }
 
             if (filters.TeamIds.Any())
-            {
                 sqlQuery = sqlQuery.Where(x => x.TeamId != null && filters.TeamIds.Contains((int)x.TeamId));
-            }
 
             if (filters.GuardianIds.Any())
-            {
                 sqlQuery = sqlQuery.Where(x => filters.GuardianIds.Contains(x.GuardianId));
-            }
 
             sqlQuery = OrderBy(sqlQuery, filters.OrderBy, filters.Descending);
 
             if (filters.Count.HasValue)
-            {
                 sqlQuery = sqlQuery.Take(filters.Count.Value);
-            }
 
             return await sqlQuery.Select(x => Map(x)).ToListAsync();
         }

@@ -10,15 +10,15 @@ public class SportLogic : ISportLogic
 {
     private readonly IdValidator _idValidator;
     private readonly SportValidator _sportValidator;
-    private readonly ISportReadRepo _sportReadRepo;
-    private readonly ISportWriteRepo _sportWriteRepo;
+    private readonly ISportReadRepo _readRepo;
+    private readonly ISportWriteRepo _writeRepo;
 
-    public SportLogic(IdValidator idValidator, SportValidator sportValidator, ISportReadRepo sportReadRepo, ISportWriteRepo sportWriteRepo)
+    public SportLogic(IdValidator idValidator, SportValidator sportValidator, ISportReadRepo readRepo, ISportWriteRepo writeRepo)
     {
         _idValidator = idValidator;
         _sportValidator = sportValidator;
-        _sportReadRepo = sportReadRepo;
-        _sportWriteRepo = sportWriteRepo;
+        _readRepo = readRepo;
+        _writeRepo = writeRepo;
     }
 
     public async Task<List<Sport>> GetSportsAsync(SportQuery filters)
@@ -31,7 +31,7 @@ public class SportLogic : ISportLogic
             throw new InvalidRequestException(
                 "'StartRange' and 'EndRange' must either both be null or both contain a DateTime");
 
-        return await _sportReadRepo.GetSportsAsync(filters);
+        return await _readRepo.GetSportsAsync(filters);
     }
 
     public async Task<Sport> GetSportByIdAsync(int sportId)
@@ -39,28 +39,28 @@ public class SportLogic : ISportLogic
         if (sportId <= 0)
             throw new InvalidRequestException("'SportId' must be greater than 0.");
 
-        return await _sportReadRepo.GetSportByIdAsync(sportId);
+        return await _readRepo.GetSportByIdAsync(sportId);
     }
 
     public async Task<Sport> AddSportAsync(Sport sport)
     {
-        await Validate(sport);
-        sport.Id = await _sportWriteRepo.InsertSportAsync(sport);
+        await ValidateAsync(sport);
+        sport.Id = await _writeRepo.InsertSportAsync(sport);
         return sport;
     }
 
     public async Task<Sport> UpdateSportAsync(Sport sport)
     {
-        await Validate(sport, true);
-        return await _sportWriteRepo.UpdateSportAsync(sport);
+        await ValidateAsync(sport, true);
+        return await _writeRepo.UpdateSportAsync(sport);
     }
 
     public async Task DeleteSportAsync(int sportId)
     {
-        await _sportWriteRepo.DeleteSportAsync(sportId);
+        await _writeRepo.DeleteSportAsync(sportId);
     }
 
-    private async Task Validate(Sport sport, bool checkId = false)
+    private async Task ValidateAsync(Sport sport, bool checkId = false)
     {
         if(sport == null)
             throw new ArgumentNullException(nameof(sport));
