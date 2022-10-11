@@ -62,6 +62,54 @@ public class TeamController : ControllerBase
         }
     }
 
+    [HttpPost]
+    [SwaggerOperation(
+        Summary = "Inserts a new team into the database")]
+    public async Task<IActionResult> AddPlayerAsync([FromBody] TeamRequest request)
+    {
+        try
+        {
+            var team = Map(request);
+            var data = await _logic.AddTeamAsync(team);
+
+            return Ok(new JSendResponse(data));
+        }
+        catch (ArgumentNullException ex)
+        {
+            Log.Warning(ex, "Team cannot be null. See exception for details.");
+
+            return BadRequest(new JSendResponse
+            {
+                Status = JSendStatus.Fail,
+                Message = ex.Message
+            });
+        }
+    }
+
+    [HttpPut("{id:int}")]
+    [SwaggerOperation(
+        Summary = "Updates an existing team in the database")]
+    public async Task<IActionResult> UpdatePlayerAsync([FromRoute] int id, [FromBody] TeamRequest request)
+    {
+        try
+        {
+            var team = Map(request, id);
+            var data = await _logic.UpdateTeamAsync(team);
+
+            return Ok(new JSendResponse(data));
+        }
+        catch (ArgumentNullException ex)
+        {
+            Log.Warning(ex, "Team cannot be null. See exception for details.");
+
+            return BadRequest(new JSendResponse
+            {
+                Status = JSendStatus.Fail,
+                Message = ex.Message
+            });
+        }
+    }
+
     [HttpDelete("{id:int}")]
     [SwaggerOperation(
         Summary = "Deletes an existing team in the database")]
@@ -82,5 +130,16 @@ public class TeamController : ControllerBase
                 Message = ex.Message
             });
         }
+    }
+
+    private static Team Map(TeamRequest request, int id = 0)
+    {
+        return new Team
+        {
+            Id = id,
+            SportId = request.SportId,
+            Name = request.Name,
+            Motto = request.Motto
+        };
     }
 }
