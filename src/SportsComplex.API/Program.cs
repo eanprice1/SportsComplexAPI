@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore;
 using Serilog;
 using Serilog.Exceptions;
+using Serilog.Exceptions.Core;
+using Serilog.Exceptions.EntityFrameworkCore.Destructurers;
 
 namespace SportsComplex.API
 {
@@ -57,7 +59,9 @@ namespace SportsComplex.API
             Log.Logger = new LoggerConfiguration()
                 .ReadFrom.Configuration(Configuration)
                 .Enrich.FromLogContext()
-                .Enrich.WithExceptionDetails()
+                .Enrich.WithExceptionDetails(new DestructuringOptionsBuilder()
+                    .WithDefaultDestructurers()
+                    .WithDestructurers(new [] {new DbUpdateExceptionDestructurer()}))
                 .CreateLogger();
         }
     }

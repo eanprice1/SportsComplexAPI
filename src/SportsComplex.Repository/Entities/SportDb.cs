@@ -10,7 +10,6 @@ namespace SportsComplex.Repository.Entities
         public int Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
-        public int MinTeamSize { get; set; }
         public int MaxTeamSize { get; set; }
         [Column(TypeName = "Date")]
         public DateTime StartDate { get; set; }

@@ -76,9 +76,6 @@ public class SportReadRepo : ISportReadRepo
             Description => descending
                 ? sqlQuery.OrderByDescending(x => x.Description)
                 : sqlQuery.OrderBy(x => x.Description),
-            MinTeamSize => descending
-                ? sqlQuery.OrderByDescending(x => x.MinTeamSize)
-                : sqlQuery.OrderBy(x => x.MinTeamSize),
             MaxTeamSize => descending
                 ? sqlQuery.OrderByDescending(x => x.MaxTeamSize)
                 : sqlQuery.OrderBy(x => x.MaxTeamSize),
@@ -101,7 +98,6 @@ public class SportReadRepo : ISportReadRepo
             Id = entity.Id,
             Name = entity.Name,
             Description = entity.Description,
-            MinTeamSize = entity.MinTeamSize,
             MaxTeamSize = entity.MaxTeamSize,
             StartDate = entity.StartDate,
             EndDate = entity.EndDate

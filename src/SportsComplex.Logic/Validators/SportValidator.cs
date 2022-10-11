@@ -15,14 +15,9 @@ public class SportValidator : AbstractValidator<Sport>
         RuleFor(x => x.Description)
             .NotEmpty().MinimumLength(1).MaximumLength(200)
             .WithMessage("'Description' must be between 1 and 200 characters long.");
-        RuleFor(x => x.MinTeamSize)
-            .GreaterThanOrEqualTo(1)
-            .WithMessage("'MinTeamSize' must be greater than or equal to 1")
-            .LessThan(x => x.MaxTeamSize)
-            .WithMessage("'MinTeamSize' must be less than 'MaxTeamSize'");
         RuleFor(x => x.MaxTeamSize)
-            .GreaterThan(x => x.MinTeamSize)
-            .WithMessage("'MaxTeamSize' must be greater than 'MinTeamSize'");
+            .GreaterThan(0)
+            .WithMessage("'MaxTeamSize' must be greater than 0");
         RuleFor(x => x.StartDate)
             .NotEmpty()
             .WithMessage("'StartDate' must not be empty.")

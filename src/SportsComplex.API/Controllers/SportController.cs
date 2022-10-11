@@ -141,7 +141,6 @@ public class SportController : ControllerBase
             Id = id,
             Name = request.Name,
             Description = request.Description,
-            MinTeamSize = request.MinTeamSize,
             MaxTeamSize = request.MaxTeamSize,
             StartDate = request.StartDate,
             EndDate = request.EndDate

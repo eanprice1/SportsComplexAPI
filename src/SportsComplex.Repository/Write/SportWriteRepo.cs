@@ -39,16 +39,17 @@ public class SportWriteRepo : ISportWriteRepo
         await using var context = new SportsComplexDbContext(_dbContextOptions);
         var sportToUpdate = Map(sport);
 
-        var sportDb = await context.Sport
+        var entity = await context.Sport.AsNoTracking()
             .Include(x => x.Teams)
             .ThenInclude(x => x.Players)
             .Where(x => x.Id == sportToUpdate.Id)
             .FirstOrDefaultAsync();
 
-        var invalidPlayerCount = sportDb.Teams.Any(x =>
-            x.Players.Count < sportDb.MinTeamSize || x.Players.Count > sportDb.MaxTeamSize);
+        if (entity == null)
+            throw new DbUpdateException($"Sport with 'Id={sportToUpdate.Id}' does not exist in database.");
 
-        if (invalidPlayerCount)
+
+        if (entity.Teams.Any(x => x.Players.Count > entity.MaxTeamSize))
             throw new InvalidRequestException(
                 "'MinTeamSize' must be less than or equal to the player count of all existing teams. 'MaxTeamSize' must be greater than or equal to the player count of all existing teams.");
 
@@ -117,7 +118,6 @@ public class SportWriteRepo : ISportWriteRepo
             Id = model.Id,
             Name = model.Name,
             Description = model.Description,
-            MinTeamSize = model.MinTeamSize,
             MaxTeamSize = model.MaxTeamSize,
             StartDate = model.StartDate,
             EndDate = model.EndDate
