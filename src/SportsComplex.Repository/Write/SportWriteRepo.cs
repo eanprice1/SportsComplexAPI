@@ -51,7 +51,7 @@ public class SportWriteRepo : ISportWriteRepo
 
         if (entity.Teams.Any(x => x.Players.Count > entity.MaxTeamSize))
             throw new InvalidRequestException(
-                "'MinTeamSize' must be less than or equal to the player count of all existing teams. 'MaxTeamSize' must be greater than or equal to the player count of all existing teams.");
+                "'MaxTeamSize' must be greater than or equal to the player count of all existing teams.");
 
         context.Sport.Update(sportToUpdate);
 
