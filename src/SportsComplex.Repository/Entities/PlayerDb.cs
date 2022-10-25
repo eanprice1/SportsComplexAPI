@@ -16,6 +16,6 @@ namespace SportsComplex.Repository.Entities
         public DateTime BirthDate { get; set; }
         public int Age { get; set; }
         public GuardianDb Guardian { get; set; }
-        public TeamDb Team { get; set; }
+        public TeamDb? Team { get; set; }
     }
 }
