@@ -1,11 +1,13 @@
 ﻿namespace SportsComplex.Logic.Utilities.OrderByColumns;
 
-public static class PlayerColumns
+public class CoachColumns
 {
     public const string TeamId = "teamid";
-    public const string GuardianId = "guardianid";
     public const string FirstName = "firstname";
     public const string LastName = "lastname";
     public const string BirthDate = "birthdate";
-    public const string Age = "age";
+    public const string PhoneNumber = "phonenumber";
+    public const string Email = "email";
+    public const string Address = "address";
+    public const string IsHeadCoach = "isheadcoach";
 }

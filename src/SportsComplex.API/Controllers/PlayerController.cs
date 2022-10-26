@@ -31,6 +31,7 @@ namespace SportsComplex.API.Controllers
                 Ids = query.Ids,
                 TeamIds = query.TeamIds,
                 GuardianIds = query.GuardianIds,
+                OnlyUnassignedPlayers = query.OnlyUnassignedPlayers,
                 Count = query.Count,
                 Descending = query.Descending,
                 OrderBy = query.OrderBy

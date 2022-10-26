@@ -24,8 +24,11 @@ namespace SportsComplex.Repository.Read
             if (filters.Ids.Any())
                 sqlQuery = sqlQuery.Where(x => filters.Ids.Contains(x.Id));
 
-            if (filters.TeamIds.Any())
+            if (filters.TeamIds.Any() && !filters.OnlyUnassignedPlayers)
                 sqlQuery = sqlQuery.Where(x => x.TeamId != null && filters.TeamIds.Contains((int)x.TeamId));
+
+            if (filters.OnlyUnassignedPlayers)
+                sqlQuery = sqlQuery.Where(x => x.TeamId == null);
 
             if (filters.GuardianIds.Any())
                 sqlQuery = sqlQuery.Where(x => filters.GuardianIds.Contains(x.GuardianId));
@@ -56,9 +59,6 @@ namespace SportsComplex.Repository.Read
         {
             return orderBy?.ToLower() switch
             {
-                Id => descending
-                    ? sqlQuery.OrderByDescending(x => x.Id)
-                    : sqlQuery.OrderBy(x => x.Id),
                 TeamId => descending 
                     ? sqlQuery.OrderByDescending(x => x.TeamId)
                     : sqlQuery.OrderBy(x => x.TeamId),

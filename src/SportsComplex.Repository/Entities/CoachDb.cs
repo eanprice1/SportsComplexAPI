@@ -20,6 +20,6 @@ namespace SportsComplex.Repository.Entities
         [Column(TypeName = "Bit")]
         public bool IsHeadCoach { get; set; }
 
-        public TeamDb Team { get; set; }
+        public TeamDb? Team { get; set; }
     }
 }

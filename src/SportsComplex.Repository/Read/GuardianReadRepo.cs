@@ -50,9 +50,6 @@ namespace SportsComplex.Repository.Read
         {
             return orderBy?.ToLower() switch
             {
-                Id => descending
-                    ? sqlQuery.OrderByDescending(x => x.Id)
-                    : sqlQuery.OrderBy(x => x.Id),
                 FirstName => descending
                     ? sqlQuery.OrderByDescending(x => x.FirstName)
                     : sqlQuery.OrderBy(x => x.FirstName),

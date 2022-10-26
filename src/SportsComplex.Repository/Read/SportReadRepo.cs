@@ -60,9 +60,6 @@ public class SportReadRepo : ISportReadRepo
     {
         return orderBy?.ToLower() switch
         {
-            Id => descending
-                ? sqlQuery.OrderByDescending(x => x.Id)
-                : sqlQuery.OrderBy(x => x.Id),
             Name => descending
                 ? sqlQuery.OrderByDescending(x => x.Name)
                 : sqlQuery.OrderBy(x => x.Name),
