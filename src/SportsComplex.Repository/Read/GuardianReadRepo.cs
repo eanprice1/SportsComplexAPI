@@ -24,6 +24,12 @@ namespace SportsComplex.Repository.Read
             if (filters.Ids.Any())
                 sqlQuery = sqlQuery.Where(x => filters.Ids.Contains(x.Id));
 
+            if (filters.FirstName != null)
+                sqlQuery = sqlQuery.Where(x => x.FirstName.Contains(filters.FirstName));
+
+            if (filters.LastName != null)
+                sqlQuery = sqlQuery.Where(x => x.LastName.Contains(filters.LastName));
+
             sqlQuery = OrderBy(sqlQuery, filters.OrderBy, filters.Descending);
 
             if(filters.Count.HasValue)

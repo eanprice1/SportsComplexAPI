@@ -17,5 +17,6 @@ namespace SportsComplex.Repository.Entities
         public List<MatchDb> AwayMatches { get; set; }
         public List<PracticeDb> Practices { get; set; }
         public List<PlayerDb> Players { get; set; }
+        public List<CoachDb> Coaches { get; set; }
     }
 }   

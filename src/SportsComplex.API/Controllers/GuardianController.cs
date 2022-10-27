@@ -29,6 +29,8 @@ namespace SportsComplex.API.Controllers
             var filters = new GuardianQuery
             {
                 Ids = query.Ids,
+                FirstName = query.FirstName,
+                LastName = query.LastName,
                 Count = query.Count,
                 Descending = query.Descending,
                 OrderBy = query.OrderBy

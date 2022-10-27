@@ -27,6 +27,12 @@ namespace SportsComplex.Repository.Read
             if (filters.TeamIds.Any() && !filters.OnlyUnassignedPlayers)
                 sqlQuery = sqlQuery.Where(x => x.TeamId != null && filters.TeamIds.Contains((int)x.TeamId));
 
+            if (filters.FirstName != null)
+                sqlQuery = sqlQuery.Where(x => x.FirstName.Contains(filters.FirstName));
+
+            if (filters.LastName != null)
+                sqlQuery = sqlQuery.Where(x => x.LastName.Contains(filters.LastName));
+
             if (filters.OnlyUnassignedPlayers)
                 sqlQuery = sqlQuery.Where(x => x.TeamId == null);
 

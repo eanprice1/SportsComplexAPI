@@ -1,10 +1,7 @@
-﻿using SportsComplex.Logic.Interfaces;
+﻿namespace SportsComplex.API.Api.Requests;
 
-namespace SportsComplex.Logic.Models;
-
-public class Coach : IModel
+public class CoachRequest
 {
-    public int Id { get; set; }
     public int? TeamId { get; set; }
     public string FirstName { get; set; }
     public string LastName { get; set; }

@@ -89,7 +89,7 @@ namespace SportsComplex.Logic
                 await _guardianReadRepo.GetGuardianByIdAsync(player.GuardianId);
 
                 if (player.TeamId != null)
-                    await _teamReadRepo.GetTeamByIdAsync((int)player.TeamId);
+                    await _teamReadRepo.GetTeamByIdAsync((int) player.TeamId);
             }
             catch (EntityNotFoundException ex)
             {

@@ -57,6 +57,11 @@ namespace SportsComplex.Repository
                 .HasMany(x => x.Players)
                 .WithOne(x => x.Team)
                 .HasForeignKey(x => x.TeamId);
+
+            modelBuilder.Entity<TeamDb>()
+                .HasMany(x => x.Coaches)
+                .WithOne(x => x.Team)
+                .HasForeignKey(x => x.TeamId);
         }
 
         public DbSet<GuardianDb> Guardian { get; set; }

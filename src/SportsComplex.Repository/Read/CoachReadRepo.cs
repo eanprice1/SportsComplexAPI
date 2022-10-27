@@ -1,12 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SportsComplex.Logic.Exceptions;
 using SportsComplex.Logic.Models;
+using SportsComplex.Logic.Repositories;
 using SportsComplex.Repository.Entities;
 using static SportsComplex.Logic.Utilities.OrderByColumns.CoachColumns;
 
 namespace SportsComplex.Repository.Read;
 
-public class CoachReadRepo
+public class CoachReadRepo : ICoachReadRepo
 {
     private readonly DbContextOptions<SportsComplexDbContext> _dbContextOptions;
 
@@ -26,11 +27,17 @@ public class CoachReadRepo
         if (filters.TeamIds.Any() && !filters.OnlyUnassignedCoaches)
             sqlQuery = sqlQuery.Where(x => x.TeamId != null && filters.TeamIds.Contains((int)x.TeamId));
 
+        if (filters.FirstName != null)
+            sqlQuery = sqlQuery.Where(x => x.FirstName.Contains(filters.FirstName));
+
+        if (filters.LastName != null)
+            sqlQuery = sqlQuery.Where(x => x.LastName.Contains(filters.LastName));
+
+        if (filters.IsHeadCoach != null)
+            sqlQuery = sqlQuery.Where(x => x.IsHeadCoach == filters.IsHeadCoach);
+
         if (filters.OnlyUnassignedCoaches)
             sqlQuery = sqlQuery.Where(x => x.TeamId == null);
-
-        if (filters.OnlyHeadCoaches)
-            sqlQuery = sqlQuery.Where(x => x.IsHeadCoach == true);
 
         sqlQuery = OrderBy(sqlQuery, filters.OrderBy, filters.Descending);
 
