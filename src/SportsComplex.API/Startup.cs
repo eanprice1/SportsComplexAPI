@@ -66,6 +66,8 @@ namespace SportsComplex.API
             services.AddTransient<ITeamWriteRepo, TeamWriteRepo>();
             services.AddTransient<ICoachReadRepo, CoachReadRepo>();
             services.AddTransient<ICoachWriteRepo, CoachWriteRepo>();
+            services.AddTransient<ILocationReadRepo, LocationReadRepo>();
+            services.AddTransient<ILocationWriteRepo, LocationWriteRepo>();
 
             //Logic
             services.AddTransient<IdValidator>();
@@ -74,11 +76,13 @@ namespace SportsComplex.API
             services.AddTransient<SportValidator>();
             services.AddTransient<TeamValidator>();
             services.AddTransient<CoachValidator>();
+            services.AddTransient<LocationValidator>();
             services.AddTransient<IGuardianLogic, GuardianLogic>();
             services.AddTransient<IPlayerLogic, PlayerLogic>();
             services.AddTransient<ISportLogic, SportLogic>();
             services.AddTransient<ITeamLogic, TeamLogic>();
             services.AddTransient<ICoachLogic, CoachLogic>();
+            services.AddTransient<ILocationLogic, LocationLogic>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

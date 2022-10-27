@@ -1,25 +1,26 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SportsComplex.Logic.Exceptions;
 using SportsComplex.Logic.Models;
-using SportsComplex.Logic.Repositories;
 using SportsComplex.Repository.Entities;
-using static SportsComplex.Logic.Utilities.OrderByColumns.TeamColumns;
+using System.Xml.Linq;
+using SportsComplex.Logic.Repositories;
+using static SportsComplex.Logic.Utilities.OrderByColumns.LocationColumns;
 
 namespace SportsComplex.Repository.Read;
 
-public class TeamReadRepo : ITeamReadRepo
+public class LocationReadRepo : ILocationReadRepo
 {
     private readonly DbContextOptions<SportsComplexDbContext> _dbContextOptions;
 
-    public TeamReadRepo(DbContextOptions<SportsComplexDbContext> dbContextOptions)
+    public LocationReadRepo(DbContextOptions<SportsComplexDbContext> dbContextOptions)
     {
         _dbContextOptions = dbContextOptions;
     }
 
-    public async Task<List<Team>> GetTeamsAsync(TeamQuery filters)
+    public async Task<List<Location>> GetLocationsAsync(LocationQuery filters)
     {
         await using var context = new SportsComplexDbContext(_dbContextOptions);
-        var sqlQuery = context.Team.AsNoTracking();
+        var sqlQuery = context.Location.AsNoTracking();
 
         if (filters.Ids.Any())
             sqlQuery = sqlQuery.Where(x => filters.Ids.Contains(x.Id));
@@ -30,6 +31,9 @@ public class TeamReadRepo : ITeamReadRepo
         if (filters.Name != null)
             sqlQuery = sqlQuery.Where(x => x.Name.Contains(filters.Name));
 
+        if (filters.Address != null)
+            sqlQuery = sqlQuery.Where(x => x.Address.Contains(filters.Address));
+
         sqlQuery = OrderBy(sqlQuery, filters.OrderBy, filters.Descending);
 
         if (filters.Count.HasValue)
@@ -38,21 +42,21 @@ public class TeamReadRepo : ITeamReadRepo
         return await sqlQuery.Select(x => Map(x)).ToListAsync();
     }
 
-    public async Task<Team> GetTeamByIdAsync(int teamId)
+    public async Task<Location> GetLocationByIdAsync(int locationId)
     {
         await using var context = new SportsComplexDbContext(_dbContextOptions);
 
-        var entity = await context.Team.AsNoTracking()
-            .Where(x => x.Id == teamId)
+        var entity = await context.Location.AsNoTracking()
+            .Where(x => x.Id == locationId)
             .FirstOrDefaultAsync();
 
         if(entity == null)
-            throw new EntityNotFoundException($"Could not find team with 'Id={teamId}' in database.");
+            throw new EntityNotFoundException($"Could not find location with 'Id={locationId}' in database.");
 
         return Map(entity);
     }
 
-    private static IQueryable<TeamDb> OrderBy(IQueryable<TeamDb> sqlQuery, string? orderBy, bool descending)
+    private static IQueryable<LocationDb> OrderBy(IQueryable<LocationDb> sqlQuery, string? orderBy, bool descending)
     {
         return orderBy?.ToLower() switch
         {
@@ -62,23 +66,27 @@ public class TeamReadRepo : ITeamReadRepo
             Name => descending
                 ? sqlQuery.OrderByDescending(x => x.Name)
                 : sqlQuery.OrderBy(x => x.Name),
-            Motto => descending
-                ? sqlQuery.OrderByDescending(x => x.Motto)
-                : sqlQuery.OrderBy(x => x.Motto),
+            Address => descending
+                ? sqlQuery.OrderByDescending(x => x.Address)
+                : sqlQuery.OrderBy(x => x.Address),
+            Description => descending
+                ? sqlQuery.OrderByDescending(x => x.Description)
+                : sqlQuery.OrderBy(x => x.Description),
             _ => descending
                 ? sqlQuery.OrderByDescending(x => x.Id)
                 : sqlQuery.OrderBy(x => x.Id)
         };
     }
 
-    private static Team Map(TeamDb entity)
+    private static Location Map(LocationDb entity)
     {
-        return new Team
+        return new Location
         {
             Id = entity.Id,
             SportId = entity.SportId,
             Name = entity.Name,
-            Motto = entity.Motto
+            Address = entity.Address,
+            Description = entity.Description
         };
     }
 }

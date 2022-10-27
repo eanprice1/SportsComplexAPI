@@ -25,7 +25,7 @@ public class SportReadRepo : ISportReadRepo
             sqlQuery = sqlQuery.Where(x => filters.Ids.Contains(x.Id));
 
         if (filters.Name != null)
-            sqlQuery = sqlQuery.Where(x => x.Name == filters.Name);
+            sqlQuery = sqlQuery.Where(x => x.Name.Contains(filters.Name));
 
         if (filters.StartRange != null && filters.EndRange != null)
         {
