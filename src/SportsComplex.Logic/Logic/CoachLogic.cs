@@ -4,7 +4,7 @@ using SportsComplex.Logic.Models;
 using SportsComplex.Logic.Repositories;
 using SportsComplex.Logic.Validators;
 
-namespace SportsComplex.Logic;
+namespace SportsComplex.Logic.Logic;
 
 public class CoachLogic : ICoachLogic
 {
@@ -56,7 +56,7 @@ public class CoachLogic : ICoachLogic
 
     private async Task ValidateAsync(Coach coach, bool checkId = false)
     {
-        if(coach == null) 
+        if (coach == null)
             throw new ArgumentNullException(nameof(coach));
 
         var result = await _coachValidator.ValidateAsync(coach);

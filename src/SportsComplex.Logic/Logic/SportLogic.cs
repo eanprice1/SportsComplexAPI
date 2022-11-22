@@ -4,7 +4,7 @@ using SportsComplex.Logic.Models;
 using SportsComplex.Logic.Repositories;
 using SportsComplex.Logic.Validators;
 
-namespace SportsComplex.Logic;
+namespace SportsComplex.Logic.Logic;
 
 public class SportLogic : ISportLogic
 {
@@ -62,19 +62,19 @@ public class SportLogic : ISportLogic
 
     private async Task ValidateAsync(Sport sport, bool checkId = false)
     {
-        if(sport == null)
+        if (sport == null)
             throw new ArgumentNullException(nameof(sport));
 
         var result = await _sportValidator.ValidateAsync(sport);
 
-        if(!result.IsValid)
+        if (!result.IsValid)
             throw new InvalidRequestException(result.ToString());
 
         if (checkId)
         {
             result = await _idValidator.ValidateAsync(sport);
 
-            if(!result.IsValid)
+            if (!result.IsValid)
                 throw new InvalidRequestException(result.ToString());
         }
     }

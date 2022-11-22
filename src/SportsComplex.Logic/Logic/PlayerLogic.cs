@@ -5,7 +5,7 @@ using SportsComplex.Logic.Repositories;
 using SportsComplex.Logic.Validators;
 using System.Reflection;
 
-namespace SportsComplex.Logic
+namespace SportsComplex.Logic.Logic
 {
     public class PlayerLogic : IPlayerLogic
     {
@@ -38,7 +38,7 @@ namespace SportsComplex.Logic
 
         public async Task<Player> GetPlayerByIdAsync(int playerId)
         {
-            if(playerId <= 0)
+            if (playerId <= 0)
                 throw new InvalidRequestException("'PlayerId' must be greater than 0.");
 
             return await _playerReadRepo.GetPlayerByIdAsync(playerId);
@@ -66,7 +66,7 @@ namespace SportsComplex.Logic
             await _writeRepo.DeletePlayerAsync(playerId);
         }
 
-        private async Task ValidateAsync(Player player, bool checkId=false)
+        private async Task ValidateAsync(Player player, bool checkId = false)
         {
             if (player == null)
                 throw new ArgumentNullException(nameof(player));
@@ -89,7 +89,7 @@ namespace SportsComplex.Logic
                 await _guardianReadRepo.GetGuardianByIdAsync(player.GuardianId);
 
                 if (player.TeamId != null)
-                    await _teamReadRepo.GetTeamByIdAsync((int) player.TeamId);
+                    await _teamReadRepo.GetTeamByIdAsync((int)player.TeamId);
             }
             catch (EntityNotFoundException ex)
             {

@@ -4,7 +4,7 @@ using SportsComplex.Logic.Models;
 using SportsComplex.Logic.Repositories;
 using SportsComplex.Logic.Validators;
 
-namespace SportsComplex.Logic;
+namespace SportsComplex.Logic.Logic;
 
 public class TeamLogic : ITeamLogic
 {
@@ -14,7 +14,7 @@ public class TeamLogic : ITeamLogic
     private readonly ITeamWriteRepo _writeRepo;
     private readonly ISportReadRepo _sportReadRepo;
 
-    public TeamLogic(IdValidator idValidator,TeamValidator teamValidator, ITeamReadRepo teamReadRepo, ITeamWriteRepo writeRepo, ISportReadRepo sportReadRepo)
+    public TeamLogic(IdValidator idValidator, TeamValidator teamValidator, ITeamReadRepo teamReadRepo, ITeamWriteRepo writeRepo, ISportReadRepo sportReadRepo)
     {
         _idValidator = idValidator;
         _teamValidator = teamValidator;

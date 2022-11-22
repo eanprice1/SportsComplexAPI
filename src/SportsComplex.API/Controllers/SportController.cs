@@ -32,7 +32,6 @@ public class SportController : ControllerBase
             Name = query.Name,
             StartRange = query.StartRange,
             EndRange = query.EndRange,
-            FilterByEndDateFlag = query.FilterByEndDateFlag,
             Count = query.Count,
             Descending = query.Descending,
             OrderBy = query.OrderBy

@@ -4,7 +4,7 @@ using SportsComplex.Logic.Models;
 using SportsComplex.Logic.Repositories;
 using SportsComplex.Logic.Validators;
 
-namespace SportsComplex.Logic;
+namespace SportsComplex.Logic.Logic;
 
 public class LocationLogic : ILocationLogic
 {
@@ -56,7 +56,7 @@ public class LocationLogic : ILocationLogic
 
     private async Task ValidateAsync(Location location, bool checkId = false)
     {
-        if(location == null) 
+        if (location == null)
             throw new ArgumentNullException(nameof(location));
 
         var result = await _locationValidator.ValidateAsync(location);

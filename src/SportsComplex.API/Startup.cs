@@ -5,9 +5,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Serilog;
 using SportsComplex.API.Api.JSend;
-using SportsComplex.Logic;
 using SportsComplex.Logic.Exceptions;
 using SportsComplex.Logic.Interfaces;
+using SportsComplex.Logic.Logic;
 using SportsComplex.Logic.Repositories;
 using SportsComplex.Logic.Validators;
 using SportsComplex.Repository;
@@ -68,6 +68,7 @@ namespace SportsComplex.API
             services.AddTransient<ICoachWriteRepo, CoachWriteRepo>();
             services.AddTransient<ILocationReadRepo, LocationReadRepo>();
             services.AddTransient<ILocationWriteRepo, LocationWriteRepo>();
+            services.AddTransient<IMatchReadRepo, MatchReadRepo>();
 
             //Logic
             services.AddTransient<IdValidator>();

@@ -4,7 +4,7 @@ using SportsComplex.Logic.Models;
 using SportsComplex.Logic.Repositories;
 using SportsComplex.Logic.Validators;
 
-namespace SportsComplex.Logic
+namespace SportsComplex.Logic.Logic
 {
     public class GuardianLogic : IGuardianLogic
     {
@@ -56,7 +56,7 @@ namespace SportsComplex.Logic
             await _writeRepo.DeleteGuardianAsync(guardianId);
         }
 
-        private async Task ValidateAsync(Guardian guardian, bool checkId=false)
+        private async Task ValidateAsync(Guardian guardian, bool checkId = false)
         {
             if (guardian == null)
                 throw new ArgumentNullException(nameof(guardian));
