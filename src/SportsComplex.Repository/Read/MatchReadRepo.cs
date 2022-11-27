@@ -35,9 +35,7 @@ public class MatchReadRepo : IMatchReadRepo
 
         if (filters.StartRange != null && filters.EndRange != null)
         {
-            sqlQuery = sqlQuery.Where(x =>
-                (filters.StartRange <= x.EndDateTime && x.EndDateTime <= filters.EndRange) ||
-                (filters.StartRange <= x.StartDateTime && x.StartDateTime <= filters.EndRange));
+            sqlQuery = sqlQuery.Where(x => filters.StartRange <= x.EndDateTime && x.StartDateTime <= filters.EndRange);
         }
 
         sqlQuery = OrderBy(sqlQuery, filters.OrderBy, filters.Descending);

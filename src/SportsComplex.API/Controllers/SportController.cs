@@ -70,8 +70,8 @@ public class SportController : ControllerBase
     {
         try
         {
-            var player = Map(request);
-            var data = await _logic.AddSportAsync(player);
+            var sport = Map(request);
+            var data = await _logic.AddSportAsync(sport);
 
             return Ok(new JSendResponse(data));
         }
@@ -94,8 +94,8 @@ public class SportController : ControllerBase
     {
         try
         {
-            var player = Map(request, id);
-            var data = await _logic.UpdateSportAsync(player);
+            var sport = Map(request, id);
+            var data = await _logic.UpdateSportAsync(sport);
 
             return Ok(new JSendResponse(data));
         }

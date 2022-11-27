@@ -20,9 +20,7 @@ public class SportValidator : AbstractValidator<Sport>
             .WithMessage("'MaxTeamSize' must be greater than 0");
         RuleFor(x => x.StartDate)
             .NotEmpty()
-            .WithMessage("'StartDate' must not be empty.")
-            .LessThan(x => x.EndDate)
-            .WithMessage("'StartDate' must be less than than 'EndDate'.");
+            .WithMessage("'StartDate' must not be empty.");
         RuleFor(x => x.EndDate)
             .NotEmpty()
             .WithMessage("'EndDate' must not be empty")

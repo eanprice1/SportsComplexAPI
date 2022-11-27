@@ -29,9 +29,7 @@ public class SportReadRepo : ISportReadRepo
 
         if (filters.StartRange != null && filters.EndRange != null)
         {
-            sqlQuery = sqlQuery.Where(x =>
-                (filters.StartRange <= x.EndDate && x.EndDate <= filters.EndRange) ||
-                (filters.StartRange <= x.StartDate && x.StartDate <= filters.EndRange));
+            sqlQuery = sqlQuery.Where(x => filters.StartRange <= x.EndDate && x.StartDate <= filters.EndRange);
         }
 
         sqlQuery = OrderBy(sqlQuery, filters.OrderBy, filters.Descending);
