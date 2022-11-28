@@ -88,14 +88,14 @@ public class MatchLogic : IMatchLogic
 
             if (homeTeam.SportId != awayTeam.SportId)
                 throw new InvalidRequestException(
-                    "Home Team and Away Team must have the same 'sportId' in order to play a match against each other.");
+                    "'HomeTeamId' and 'AwayTeamId' must have the same 'SportId' in order to play a match against each other.");
 
             if (match.LocationId != null)
             {
                 var location = await _locationReadRepo.GetLocationByIdAsync((int)match.LocationId);
                 if (location.SportId != homeTeam.SportId)
                     throw new InvalidRequestException(
-                        "Location must have the same 'sportId' as the Home Team and Away Team in order to create a match at that location.");
+                        "'LocationId' must have the same 'SportId' as the 'HomeTeamId' and 'AwayTeamId' in order to schedule a match at that location.");
             }
         }
         catch (EntityNotFoundException ex)
@@ -105,6 +105,14 @@ public class MatchLogic : IMatchLogic
         }
 
         // Verify there are no conflicting matches with the provided StartDateTime, EndDateTime, and LocationId
+        await ValidateLocationConflicts(match);
+
+        // Verify that both teams are not already scheduled for a match
+        await ValidateTeamConflicts(match);
+    }
+
+    private async Task ValidateLocationConflicts(Match match)
+    {
         if (match.LocationId != null)
         {
             var filters = new MatchQuery
@@ -122,9 +130,25 @@ public class MatchLogic : IMatchLogic
 
             if (conflictingMatches.Any())
                 throw new InvalidRequestException(
-                    $"'StartDateTime' and 'EndDateTime' must not conflict with other matches 'StartDateTime' and 'EndDateTime'. Conflicting Match Ids: {string.Join(", ", conflictingMatches)}");
+                    $"'StartDateTime' and 'EndDateTime' must not conflict with other matches at the same location. Conflicting Match Ids: {string.Join(", ", conflictingMatches)}");
         }
+    }
 
-        // Verify that both teams are not already schedule for a match
+    private async Task ValidateTeamConflicts(Match match)
+    {
+        var filters = new MatchQuery
+        {
+            TeamIds = new List<int> { match.AwayTeamId, match.HomeTeamId },
+            StartRange = match.StartDateTime,
+            EndRange = match.EndDateTime,
+            Descending = false
+        };
+        var matches = await _matchReadRepo.GetMatchesAsync(filters);
+        var conflictingMatches = matches.Select(x => x.Id).ToList();
+
+        if (conflictingMatches != null && conflictingMatches.Any())
+            throw new InvalidRequestException(
+                $"'HomeTeamId' and 'AwayTeamId' must not already be scheduled for a match at another location. Conflicting Match Ids: {string.Join(", ", conflictingMatches)}");
+
     }
 }
