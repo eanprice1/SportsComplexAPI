@@ -1,6 +1,6 @@
 ﻿using SportsComplex.Logic.Models;
 
-namespace SportsComplex.Logic.Repositories;
+namespace SportsComplex.Logic.Interfaces;
 
 public interface IMatchLogic
 {

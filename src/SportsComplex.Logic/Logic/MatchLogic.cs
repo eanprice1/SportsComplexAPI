@@ -1,4 +1,5 @@
 ﻿using SportsComplex.Logic.Exceptions;
+using SportsComplex.Logic.Interfaces;
 using SportsComplex.Logic.Models;
 using SportsComplex.Logic.Repositories;
 using SportsComplex.Logic.Validators;
@@ -13,8 +14,9 @@ public class MatchLogic : IMatchLogic
     private readonly IMatchWriteRepo _matchWriteRepo;
     private readonly ITeamReadRepo _teamReadRepo;
     private readonly ILocationReadRepo _locationReadRepo;
+    private readonly IPracticeReadRepo _practiceReadRepo;
 
-    public MatchLogic(IdValidator idValidator, MatchValidator matchValidator, IMatchReadRepo matchReadRepo, IMatchWriteRepo matchWriteRepo, ITeamReadRepo teamReadRepo, ILocationReadRepo locationReadRepo)
+    public MatchLogic(IdValidator idValidator, MatchValidator matchValidator, IMatchReadRepo matchReadRepo, IMatchWriteRepo matchWriteRepo, ITeamReadRepo teamReadRepo, ILocationReadRepo locationReadRepo, IPracticeReadRepo practiceReadRepo)
     {
         _idValidator = idValidator;
         _matchValidator = matchValidator;
@@ -22,6 +24,7 @@ public class MatchLogic : IMatchLogic
         _matchWriteRepo = matchWriteRepo;
         _teamReadRepo = teamReadRepo;
         _locationReadRepo = locationReadRepo;
+        _practiceReadRepo = practiceReadRepo;
     }
 
     public async Task<List<Match>> GetMatchesAsync(MatchQuery filters)
@@ -104,51 +107,58 @@ public class MatchLogic : IMatchLogic
                 "'HomeTeamId', 'AwayTeamId', and 'LocationId' (if provided) must exist in the database when adding a new match. See inner exception for details.", ex);
         }
 
-        // Verify there are no conflicting matches with the provided StartDateTime, EndDateTime, and LocationId
-        await ValidateLocationConflicts(match);
-
-        // Verify that both teams are not already scheduled for a match
-        await ValidateTeamConflicts(match);
+        await ValidateMatchConflictsAsync(match);
+        await ValidatePracticeConflictsAsync(match);
     }
 
-    private async Task ValidateLocationConflicts(Match match)
+    private async Task ValidateMatchConflictsAsync(Match match)
     {
+        var conflictingMatches = await _matchReadRepo.GetConflictingMatchesAsync(match.StartDateTime, match.EndDateTime);
+        if (!conflictingMatches.Any())
+            return;
+
+        var teams = new List<int> { match.HomeTeamId, match.AwayTeamId };
+        var teamConflicts = match.Id == 0
+            ? conflictingMatches.Where(x => teams.Contains(x.AwayTeamId) || teams.Contains(x.HomeTeamId))
+                .Select(x => x.Id).ToList()
+            : conflictingMatches.Where(x => x.Id != match.Id && (teams.Contains(x.AwayTeamId) || teams.Contains(x.HomeTeamId)))
+                .Select(x => x.Id).ToList();
+
+        if (teamConflicts.Any())
+            throw new InvalidRequestException(
+                $"'HomeTeamId' and 'AwayTeamId' must not already be scheduled for a match that conflicts with the provided 'StartDateTime' and 'EndDateTime'. Conflicting Match Ids: {string.Join(", ", teamConflicts)}");
+
         if (match.LocationId != null)
         {
-            var filters = new MatchQuery
-            {
-                LocationIds = new List<int> { (int)match.LocationId },
-                StartRange = match.StartDateTime,
-                EndRange = match.EndDateTime,
-                Descending = false
-            };
-            var matches = await _matchReadRepo.GetMatchesAsync(filters);
+            var locationConflicts = match.Id == 0
+                ? conflictingMatches.Where(x => x.LocationId == match.LocationId).Select(x => x.Id).ToList()
+                : conflictingMatches.Where(x => x.LocationId == match.LocationId && x.Id != match.Id).Select(x => x.Id).ToList();
 
-            var conflictingMatches = match.Id == 0
-                ? matches.Select(x => x.Id).ToList()
-                : matches.Select(x => x.Id).Where(id => id != match.Id).ToList();
-
-            if (conflictingMatches.Any())
+            if (locationConflicts.Any())
                 throw new InvalidRequestException(
-                    $"'StartDateTime' and 'EndDateTime' must not conflict with other matches at the same location. Conflicting Match Ids: {string.Join(", ", conflictingMatches)}");
+                    $"'StartDateTime' and 'EndDateTime' must not conflict with other matches at the same location. Conflicting Match Ids: {string.Join(", ", locationConflicts)}");
         }
     }
 
-    private async Task ValidateTeamConflicts(Match match)
+    private async Task ValidatePracticeConflictsAsync(Match match)
     {
-        var filters = new MatchQuery
-        {
-            TeamIds = new List<int> { match.AwayTeamId, match.HomeTeamId },
-            StartRange = match.StartDateTime,
-            EndRange = match.EndDateTime,
-            Descending = false
-        };
-        var matches = await _matchReadRepo.GetMatchesAsync(filters);
-        var conflictingMatches = matches.Select(x => x.Id).ToList();
+        var conflictingPractices = await _practiceReadRepo.GetConflictingPracticesAsync(match.StartDateTime, match.EndDateTime);
+        if (!conflictingPractices.Any())
+            return;
 
-        if (conflictingMatches != null && conflictingMatches.Any())
+        var teams = new List<int> { match.HomeTeamId, match.AwayTeamId };
+        var teamConflicts = conflictingPractices.Where(x => teams.Contains(x.TeamId)).Select(x => x.Id).ToList();
+
+        if (teamConflicts.Any())
             throw new InvalidRequestException(
-                $"'HomeTeamId' and 'AwayTeamId' must not already be scheduled for a match at another location. Conflicting Match Ids: {string.Join(", ", conflictingMatches)}");
+                $"'HomeTeamId' and 'AwayTeamId' must not already be scheduled for a practice that conflicts with the provided 'StartDateTime' and 'EndDateTime' of the match. Conflicting Practice Ids: {string.Join(", ", teamConflicts)}");
 
+        if (match.LocationId != null)
+        {
+            var locationConflicts = conflictingPractices.Where(x => x.LocationId == match.LocationId).Select(x => x.Id).ToList();
+            if (locationConflicts.Any())
+                throw new InvalidRequestException(
+                    $"'StartDateTime' and 'EndDateTime' of match must not conflict with practices at the same location. Conflicting Practice Ids: {string.Join(", ", locationConflicts)}");
+        }
     }
 }

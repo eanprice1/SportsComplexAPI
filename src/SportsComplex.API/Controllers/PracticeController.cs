@@ -10,23 +10,23 @@ using Swashbuckle.AspNetCore.Annotations;
 namespace SportsComplex.API.Controllers;
 
 [ApiController]
-[Route("matches")]
+[Route("practices")]
 [Produces("application/json")]
-public class MatchController : ControllerBase
+public class PracticeController : ControllerBase
 {
-    private readonly IMatchLogic _logic;
+    private readonly IPracticeLogic _logic;
 
-    public MatchController(IMatchLogic logic)
+    public PracticeController(IPracticeLogic logic)
     {
         _logic = logic;
     }
 
     [HttpGet]
     [SwaggerOperation(
-        Summary = "Gets matches from database")]
-    public async Task<IActionResult> GetMatchesAsync([FromQuery] GetMatchQuery query)
+        Summary = "Gets practices from database")]
+    public async Task<IActionResult> GetPracticesAsync([FromQuery] GetPracticeQuery query)
     {
-        var filters = new MatchQuery()
+        var filters = new PracticeQuery()
         {
             Ids = query.Ids,
             TeamIds = query.TeamIds,
@@ -38,23 +38,23 @@ public class MatchController : ControllerBase
             Descending = query.Descending
         };
 
-        var data = await _logic.GetMatchesAsync(filters);
+        var data = await _logic.GetPracticesAsync(filters);
         return Ok(new JSendResponse(data));
     }
 
     [HttpGet("{id:int}")]
     [SwaggerOperation(
-        Summary = "Gets existing match from database")]
-    public async Task<IActionResult> GetMatchByIdAsync([FromRoute] int id)
+        Summary = "Gets existing practice from database")]
+    public async Task<IActionResult> GetPracticeByIdAsync([FromRoute] int id)
     {
         try
         {
-            var data = await _logic.GetMatchById(id);
+            var data = await _logic.GetPracticeById(id);
             return Ok(new JSendResponse(data));
         }
         catch (EntityNotFoundException ex)
         {
-            Log.Error(ex, "Could not find match with 'Id={MatchId}' in database. See inner exception for details.", id);
+            Log.Error(ex, "Could not find practice with 'Id={PracticeId}' in database. See inner exception for details.", id);
 
             return NotFound(new JSendResponse
             {
@@ -66,19 +66,19 @@ public class MatchController : ControllerBase
 
     [HttpPost]
     [SwaggerOperation(
-        Summary = "Inserts a new match into the database")]
-    public async Task<IActionResult> AddMatchAsync([FromBody] MatchRequest request)
+        Summary = "Inserts a new practice into the database")]
+    public async Task<IActionResult> AddPracticeAsync([FromBody] PracticeRequest request)
     {
         try
         {
-            var match = Map(request);
-            var data = await _logic.AddMatchAsync(match);
+            var practice = Map(request);
+            var data = await _logic.AddPracticeAsync(practice);
 
             return Ok(new JSendResponse(data));
         }
         catch (ArgumentNullException ex)
         {
-            Log.Warning(ex, "Match cannot be null. See exception for details.");
+            Log.Warning(ex, "Practice cannot be null. See exception for details.");
 
             return BadRequest(new JSendResponse
             {
@@ -90,19 +90,19 @@ public class MatchController : ControllerBase
 
     [HttpPut("{id:int}")]
     [SwaggerOperation(
-        Summary = "Updates an existing match in the database")]
-    public async Task<IActionResult> UpdateMatchAsync([FromRoute] int id, [FromBody] MatchRequest request)
+        Summary = "Updates an existing practice in the database")]
+    public async Task<IActionResult> UpdatePracticeAsync([FromRoute] int id, [FromBody] PracticeRequest request)
     {
         try
         {
-            var match = Map(request, id);
-            var data = await _logic.UpdateMatchAsync(match);
+            var practice = Map(request, id);
+            var data = await _logic.UpdatePracticeAsync(practice);
 
             return Ok(new JSendResponse(data));
         }
         catch (ArgumentNullException ex)
         {
-            Log.Warning(ex, "Match cannot be null. See exception for details.");
+            Log.Warning(ex, "Practice cannot be null. See exception for details.");
 
             return BadRequest(new JSendResponse
             {
@@ -114,17 +114,17 @@ public class MatchController : ControllerBase
 
     [HttpDelete("{id:int}")]
     [SwaggerOperation(
-        Summary = "Deletes an existing match in the database")]
-    public async Task<IActionResult> DeleteMatchAsync([FromRoute] int id)
+        Summary = "Deletes an existing practice in the database")]
+    public async Task<IActionResult> DeletePracticeAsync([FromRoute] int id)
     {
         try
         {
-            await _logic.DeleteMatchAsync(id);
+            await _logic.DeletePracticeAsync(id);
             return Ok(new JSendResponse());
         }
         catch (EntityNotFoundException ex)
         {
-            Log.Warning(ex, "Cannot delete a match that does not exist in the database. See exception for details.");
+            Log.Warning(ex, "Cannot delete a practice that does not exist in the database. See exception for details.");
 
             return BadRequest(new JSendResponse
             {
@@ -134,13 +134,12 @@ public class MatchController : ControllerBase
         }
     }
 
-    private static Match Map(MatchRequest request, int id = 0)
+    private static Practice Map(PracticeRequest request, int id = 0)
     {
-        return new Match
+        return new Practice
         {
             Id = id,
-            HomeTeamId = request.HomeTeamId,
-            AwayTeamId = request.AwayTeamId,
+            TeamId = request.TeamId,
             LocationId = request.LocationId,
             StartDateTime = request.StartDateTime,
             EndDateTime = request.EndDateTime

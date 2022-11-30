@@ -6,5 +6,6 @@ namespace SportsComplex.Logic.Repositories
     {
         Task<List<Match>> GetMatchesAsync(MatchQuery filters);
         Task<Match> GetMatchByIdAsync(int matchId);
+        Task<List<Match>> GetConflictingMatchesAsync(DateTime startRange, DateTime endRange);
     }
 }

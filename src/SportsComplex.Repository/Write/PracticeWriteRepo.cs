@@ -6,63 +6,63 @@ using SportsComplex.Repository.Entities;
 
 namespace SportsComplex.Repository.Write;
 
-public class MatchWriteRepo : IMatchWriteRepo
+public class PracticeWriteRepo : IPracticeWriteRepo
 {
     private readonly DbContextOptions<SportsComplexDbContext> _dbContextOptions;
 
-    public MatchWriteRepo(DbContextOptions<SportsComplexDbContext> dbContextOptions)
+    public PracticeWriteRepo(DbContextOptions<SportsComplexDbContext> dbContextOptions)
     {
         _dbContextOptions = dbContextOptions;
     }
 
-    public async Task<int> InsertMatchAsync(Match match)
+    public async Task<int> InsertPracticeAsync(Practice practice)
     {
         await using var context = new SportsComplexDbContext(_dbContextOptions);
-        var matchToInsert = Map(match);
+        var practiceToInsert = Map(practice);
 
-        await context.Match.AddAsync(matchToInsert);
+        await context.Practice.AddAsync(practiceToInsert);
 
         try
         {
             await context.SaveChangesAsync();
-            return matchToInsert.Id;
+            return practiceToInsert.Id;
         }
         catch (DbUpdateException ex)
         {
             throw new DbWriteEntityException(
-                "Could not insert match into database. See inner exception for details.", ex);
+                "Could not insert practice into database. See inner exception for details.", ex);
         }
     }
 
-    public async Task<Match> UpdateMatchAsync(Match match)
+    public async Task<Practice> UpdatePracticeAsync(Practice practice)
     {
         await using var context = new SportsComplexDbContext(_dbContextOptions);
-        var matchToUpdate = Map(match);
+        var practiceToUpdate = Map(practice);
 
-        context.Match.Update(matchToUpdate);
+        context.Practice.Update(practiceToUpdate);
 
         try
         {
             await context.SaveChangesAsync();
-            return match;
+            return practice;
         }
         catch (DbUpdateException ex)
         {
             throw new DbWriteEntityException(
-                "Could not update match. Match may not exist in database. See inner exception for details.", ex);
+                "Could not update practice. Practice may not exist in database. See inner exception for details.", ex);
         }
     }
 
-    public async Task DeleteMatchAsync(int matchId)
+    public async Task DeletePracticeAsync(int practiceId)
     {
         await using var context = new SportsComplexDbContext(_dbContextOptions);
 
-        var entity = await context.Match.FindAsync(matchId);
+        var entity = await context.Practice.FindAsync(practiceId);
 
         if (entity == null)
-            throw new EntityNotFoundException($"Match with 'Id={matchId}' does not exist.");
+            throw new EntityNotFoundException($"Practice with 'Id={practiceId}' does not exist.");
 
-        context.Match.Remove(entity);
+        context.Practice.Remove(entity);
 
         try
         {
@@ -71,17 +71,16 @@ public class MatchWriteRepo : IMatchWriteRepo
         catch (DbUpdateException ex)
         {
             throw new DbWriteEntityException(
-                "Could not delete match. See inner exception for details.", ex);
+                "Could not delete practice. See inner exception for details.", ex);
         }
     }
 
-    private static MatchDb Map(Match model)
+    private static PracticeDb Map(Practice model)
     {
-        return new MatchDb
+        return new PracticeDb
         {
             Id = model.Id,
-            HomeTeamId = model.HomeTeamId,
-            AwayTeamId = model.AwayTeamId,
+            TeamId = model.TeamId,
             LocationId = model.LocationId,
             StartDateTime = model.StartDateTime,
             EndDateTime = model.EndDateTime
