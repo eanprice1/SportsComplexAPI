@@ -4,22 +4,22 @@ using SportsComplex.Logic.Models;
 using SportsComplex.Logic.Repositories;
 using SportsComplex.Logic.Validators;
 
-namespace SportsComplex.Logic;
+namespace SportsComplex.Logic.Logic;
 
 public class TeamLogic : ITeamLogic
 {
     private readonly IdValidator _idValidator;
     private readonly TeamValidator _teamValidator;
     private readonly ITeamReadRepo _teamReadRepo;
-    private readonly ITeamWriteRepo _writeRepo;
+    private readonly ITeamWriteRepo _teamWriteRepo;
     private readonly ISportReadRepo _sportReadRepo;
 
-    public TeamLogic(IdValidator idValidator,TeamValidator teamValidator, ITeamReadRepo teamReadRepo, ITeamWriteRepo writeRepo, ISportReadRepo sportReadRepo)
+    public TeamLogic(IdValidator idValidator, TeamValidator teamValidator, ITeamReadRepo teamReadRepo, ITeamWriteRepo teamWriteRepo, ISportReadRepo sportReadRepo)
     {
         _idValidator = idValidator;
         _teamValidator = teamValidator;
         _teamReadRepo = teamReadRepo;
-        _writeRepo = writeRepo;
+        _teamWriteRepo = teamWriteRepo;
         _sportReadRepo = sportReadRepo;
     }
 
@@ -39,19 +39,19 @@ public class TeamLogic : ITeamLogic
     public async Task<Team> AddTeamAsync(Team team)
     {
         await ValidateAsync(team);
-        team.Id = await _writeRepo.InsertTeamAsync(team);
+        team.Id = await _teamWriteRepo.InsertTeamAsync(team);
         return team;
     }
 
     public async Task<Team> UpdateTeamAsync(Team team)
     {
         await ValidateAsync(team, true);
-        return await _writeRepo.UpdateTeamAsync(team);
+        return await _teamWriteRepo.UpdateTeamAsync(team);
     }
 
     public async Task DeleteTeamAsync(int teamId)
     {
-        await _writeRepo.DeleteTeamAsync(teamId);
+        await _teamWriteRepo.DeleteTeamAsync(teamId);
     }
 
     private async Task ValidateAsync(Team team, bool checkId = false)

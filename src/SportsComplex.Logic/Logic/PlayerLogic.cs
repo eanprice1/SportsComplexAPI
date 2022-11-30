@@ -5,28 +5,28 @@ using SportsComplex.Logic.Repositories;
 using SportsComplex.Logic.Validators;
 using System.Reflection;
 
-namespace SportsComplex.Logic
+namespace SportsComplex.Logic.Logic
 {
     public class PlayerLogic : IPlayerLogic
     {
         private readonly IdValidator _idValidator;
         private readonly PlayerValidator _playerValidator;
         private readonly IPlayerReadRepo _playerReadRepo;
-        private readonly IPlayerWriteRepo _writeRepo;
+        private readonly IPlayerWriteRepo _playerWriteRepo;
         private readonly IGuardianReadRepo _guardianReadRepo;
         private readonly ITeamReadRepo _teamReadRepo;
 
         public PlayerLogic(IdValidator idValidator,
             PlayerValidator playerValidator,
             IPlayerReadRepo playerReadRepo,
-            IPlayerWriteRepo writeRepo,
+            IPlayerWriteRepo playerWriteRepo,
             IGuardianReadRepo guardianReadRepo,
             ITeamReadRepo teamReadRepo)
         {
             _idValidator = idValidator;
             _playerValidator = playerValidator;
             _playerReadRepo = playerReadRepo;
-            _writeRepo = writeRepo;
+            _playerWriteRepo = playerWriteRepo;
             _guardianReadRepo = guardianReadRepo;
             _teamReadRepo = teamReadRepo;
         }
@@ -38,7 +38,7 @@ namespace SportsComplex.Logic
 
         public async Task<Player> GetPlayerByIdAsync(int playerId)
         {
-            if(playerId <= 0)
+            if (playerId <= 0)
                 throw new InvalidRequestException("'PlayerId' must be greater than 0.");
 
             return await _playerReadRepo.GetPlayerByIdAsync(playerId);
@@ -48,7 +48,7 @@ namespace SportsComplex.Logic
         {
             await ValidateAsync(player);
             player.Age = CalculateAge(player.BirthDate);
-            player.Id = await _writeRepo.InsertPlayerAsync(player);
+            player.Id = await _playerWriteRepo.InsertPlayerAsync(player);
 
             return player;
         }
@@ -58,15 +58,15 @@ namespace SportsComplex.Logic
             await ValidateAsync(player, true);
             player.Age = CalculateAge(player.BirthDate);
 
-            return await _writeRepo.UpdatePlayerAsync(player);
+            return await _playerWriteRepo.UpdatePlayerAsync(player);
         }
 
         public async Task DeletePlayerAsync(int playerId)
         {
-            await _writeRepo.DeletePlayerAsync(playerId);
+            await _playerWriteRepo.DeletePlayerAsync(playerId);
         }
 
-        private async Task ValidateAsync(Player player, bool checkId=false)
+        private async Task ValidateAsync(Player player, bool checkId = false)
         {
             if (player == null)
                 throw new ArgumentNullException(nameof(player));
@@ -89,7 +89,7 @@ namespace SportsComplex.Logic
                 await _guardianReadRepo.GetGuardianByIdAsync(player.GuardianId);
 
                 if (player.TeamId != null)
-                    await _teamReadRepo.GetTeamByIdAsync((int) player.TeamId);
+                    await _teamReadRepo.GetTeamByIdAsync((int)player.TeamId);
             }
             catch (EntityNotFoundException ex)
             {

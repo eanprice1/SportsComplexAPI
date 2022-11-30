@@ -46,7 +46,7 @@ public class SportWriteRepo : ISportWriteRepo
             .FirstOrDefaultAsync();
 
         if (entity == null)
-            throw new DbUpdateException($"Sport with 'Id={sportToUpdate.Id}' does not exist in database.");
+            throw new EntityNotFoundException($"Sport with 'Id={sportToUpdate.Id}' does not exist in database.");
 
 
         if (entity.Teams.Any(x => x.Players.Count > entity.MaxTeamSize))

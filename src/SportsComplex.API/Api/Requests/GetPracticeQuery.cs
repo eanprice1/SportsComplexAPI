@@ -1,9 +1,10 @@
 ﻿namespace SportsComplex.API.Api.Requests;
 
-public class GetSportQuery
+public class GetPracticeQuery
 {
     public List<int> Ids { get; set; } = new();
-    public string? Name { get; set; }
+    public List<int> TeamIds { get; set; } = new();
+    public List<int> LocationIds { get; set; } = new();
     public DateTime? StartRange { get; set; }
     public DateTime? EndRange { get; set; }
     public int? Count { get; set; }

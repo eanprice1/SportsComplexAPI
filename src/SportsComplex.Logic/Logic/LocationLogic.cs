@@ -4,28 +4,28 @@ using SportsComplex.Logic.Models;
 using SportsComplex.Logic.Repositories;
 using SportsComplex.Logic.Validators;
 
-namespace SportsComplex.Logic;
+namespace SportsComplex.Logic.Logic;
 
 public class LocationLogic : ILocationLogic
 {
     private readonly IdValidator _idValidator;
     private readonly LocationValidator _locationValidator;
-    private readonly ILocationReadRepo _readRepo;
-    private readonly ILocationWriteRepo _writeRepo;
+    private readonly ILocationReadRepo _locationReadRepo;
+    private readonly ILocationWriteRepo _locationWriteRepo;
     private readonly ISportReadRepo _sportReadRepo;
 
-    public LocationLogic(IdValidator idValidator, LocationValidator locationValidator, ILocationReadRepo readRepo, ILocationWriteRepo writeRepo, ISportReadRepo sportReadRepo)
+    public LocationLogic(IdValidator idValidator, LocationValidator locationValidator, ILocationReadRepo locationReadRepo, ILocationWriteRepo locationWriteRepo, ISportReadRepo sportReadRepo)
     {
         _idValidator = idValidator;
         _locationValidator = locationValidator;
-        _readRepo = readRepo;
-        _writeRepo = writeRepo;
+        _locationReadRepo = locationReadRepo;
+        _locationWriteRepo = locationWriteRepo;
         _sportReadRepo = sportReadRepo;
     }
 
     public async Task<List<Location>> GetLocationsAsync(LocationQuery filters)
     {
-        return await _readRepo.GetLocationsAsync(filters);
+        return await _locationReadRepo.GetLocationsAsync(filters);
     }
 
     public async Task<Location> GetLocationByIdAsync(int locationId)
@@ -33,30 +33,30 @@ public class LocationLogic : ILocationLogic
         if (locationId <= 0)
             throw new InvalidRequestException("'LocationId' must be greater than 0.");
 
-        return await _readRepo.GetLocationByIdAsync(locationId);
+        return await _locationReadRepo.GetLocationByIdAsync(locationId);
     }
 
     public async Task<Location> AddLocationAsync(Location location)
     {
         await ValidateAsync(location);
-        location.Id = await _writeRepo.InsertLocationAsync(location);
+        location.Id = await _locationWriteRepo.InsertLocationAsync(location);
         return location;
     }
 
     public async Task<Location> UpdateLocationAsync(Location location)
     {
         await ValidateAsync(location, true);
-        return await _writeRepo.UpdateLocationAsync(location);
+        return await _locationWriteRepo.UpdateLocationAsync(location);
     }
 
     public async Task DeleteLocationAsync(int locationId)
     {
-        await _writeRepo.DeleteLocationAsync(locationId);
+        await _locationWriteRepo.DeleteLocationAsync(locationId);
     }
 
     private async Task ValidateAsync(Location location, bool checkId = false)
     {
-        if(location == null) 
+        if (location == null)
             throw new ArgumentNullException(nameof(location));
 
         var result = await _locationValidator.ValidateAsync(location);

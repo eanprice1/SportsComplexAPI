@@ -4,28 +4,28 @@ using SportsComplex.Logic.Models;
 using SportsComplex.Logic.Repositories;
 using SportsComplex.Logic.Validators;
 
-namespace SportsComplex.Logic;
+namespace SportsComplex.Logic.Logic;
 
 public class CoachLogic : ICoachLogic
 {
     private readonly IdValidator _idValidator;
     private readonly CoachValidator _coachValidator;
-    private readonly ICoachReadRepo _readRepo;
-    private readonly ICoachWriteRepo _writeRepo;
+    private readonly ICoachReadRepo _coachReadRepo;
+    private readonly ICoachWriteRepo _coachWriteRepo;
     private readonly ITeamReadRepo _teamReadRepo;
 
-    public CoachLogic(IdValidator idValidator, CoachValidator coachValidator, ICoachReadRepo readRepo, ICoachWriteRepo writeRepo, ITeamReadRepo teamReadRepo)
+    public CoachLogic(IdValidator idValidator, CoachValidator coachValidator, ICoachReadRepo coachReadRepo, ICoachWriteRepo coachWriteRepo, ITeamReadRepo teamReadRepo)
     {
         _idValidator = idValidator;
         _coachValidator = coachValidator;
-        _readRepo = readRepo;
-        _writeRepo = writeRepo;
+        _coachReadRepo = coachReadRepo;
+        _coachWriteRepo = coachWriteRepo;
         _teamReadRepo = teamReadRepo;
     }
 
     public async Task<List<Coach>> GetCoachesAsync(CoachQuery filters)
     {
-        return await _readRepo.GetCoachesAsync(filters);
+        return await _coachReadRepo.GetCoachesAsync(filters);
     }
 
     public async Task<Coach> GetCoachById(int coachId)
@@ -33,30 +33,30 @@ public class CoachLogic : ICoachLogic
         if (coachId <= 0)
             throw new InvalidRequestException("'CoachId' must be greater than 0.");
 
-        return await _readRepo.GetCoachByIdAsync(coachId);
+        return await _coachReadRepo.GetCoachByIdAsync(coachId);
     }
 
     public async Task<Coach> AddCoachAsync(Coach coach)
     {
         await ValidateAsync(coach);
-        coach.Id = await _writeRepo.InsertCoachAsync(coach);
+        coach.Id = await _coachWriteRepo.InsertCoachAsync(coach);
         return coach;
     }
 
     public async Task<Coach> UpdateCoachAsync(Coach coach)
     {
         await ValidateAsync(coach, true);
-        return await _writeRepo.UpdateCoachAsync(coach);
+        return await _coachWriteRepo.UpdateCoachAsync(coach);
     }
 
     public async Task DeleteCoachAsync(int coachId)
     {
-        await _writeRepo.DeleteCoachAsync(coachId);
+        await _coachWriteRepo.DeleteCoachAsync(coachId);
     }
 
     private async Task ValidateAsync(Coach coach, bool checkId = false)
     {
-        if(coach == null) 
+        if (coach == null)
             throw new ArgumentNullException(nameof(coach));
 
         var result = await _coachValidator.ValidateAsync(coach);
@@ -80,7 +80,7 @@ public class CoachLogic : ICoachLogic
 
                 if (coach.IsHeadCoach)
                 {
-                    var existingHeadCoach = await _readRepo.GetCoachesAsync(new CoachQuery
+                    var existingHeadCoach = await _coachReadRepo.GetCoachesAsync(new CoachQuery
                     {
                         TeamIds = new List<int> { (int)coach.TeamId },
                         IsHeadCoach = true

@@ -10,50 +10,51 @@ using Swashbuckle.AspNetCore.Annotations;
 namespace SportsComplex.API.Controllers;
 
 [ApiController]
-[Route("sports")]
+[Route("matches")]
 [Produces("application/json")]
-public class SportController : ControllerBase
+public class MatchController : ControllerBase
 {
-    private readonly ISportLogic _logic;
+    private readonly IMatchLogic _logic;
 
-    public SportController(ISportLogic logic)
+    public MatchController(IMatchLogic logic)
     {
         _logic = logic;
     }
 
     [HttpGet]
     [SwaggerOperation(
-        Summary = "Gets sports from database")]
-    public async Task<IActionResult> GetSportsAsync([FromQuery] GetSportQuery query)
+        Summary = "Gets matches from database")]
+    public async Task<IActionResult> GetMatchesAsync([FromQuery] GetMatchQuery query)
     {
-        var filters = new SportQuery()
+        var filters = new MatchQuery()
         {
             Ids = query.Ids,
-            Name = query.Name,
+            TeamIds = query.TeamIds,
+            LocationIds = query.LocationIds,
             StartRange = query.StartRange,
             EndRange = query.EndRange,
             Count = query.Count,
-            Descending = query.Descending,
-            OrderBy = query.OrderBy
+            OrderBy = query.OrderBy,
+            Descending = query.Descending
         };
 
-        var data = await _logic.GetSportsAsync(filters);
+        var data = await _logic.GetMatchesAsync(filters);
         return Ok(new JSendResponse(data));
     }
 
     [HttpGet("{id:int}")]
     [SwaggerOperation(
-        Summary = "Gets existing sport from database")]
-    public async Task<IActionResult> GetSportByIdAsync([FromRoute] int id)
+        Summary = "Gets existing match from database")]
+    public async Task<IActionResult> GetMatchByIdAsync([FromRoute] int id)
     {
         try
         {
-            var data = await _logic.GetSportByIdAsync(id);
+            var data = await _logic.GetMatchById(id);
             return Ok(new JSendResponse(data));
         }
         catch (EntityNotFoundException ex)
         {
-            Log.Error(ex, "Could not find sport with 'Id={SportId}' in database. See inner exception for details.", id);
+            Log.Error(ex, "Could not find match with 'Id={MatchId}' in database. See inner exception for details.", id);
 
             return NotFound(new JSendResponse
             {
@@ -65,19 +66,19 @@ public class SportController : ControllerBase
 
     [HttpPost]
     [SwaggerOperation(
-        Summary = "Inserts a new sport into the database")]
-    public async Task<IActionResult> AddSportAsync([FromBody] SportRequest request)
+        Summary = "Inserts a new match into the database")]
+    public async Task<IActionResult> AddMatchAsync([FromBody] MatchRequest request)
     {
         try
         {
-            var sport = Map(request);
-            var data = await _logic.AddSportAsync(sport);
+            var match = Map(request);
+            var data = await _logic.AddMatchAsync(match);
 
             return Ok(new JSendResponse(data));
         }
         catch (ArgumentNullException ex)
         {
-            Log.Warning(ex, "Sport cannot be null. See exception for details.");
+            Log.Warning(ex, "Match cannot be null. See exception for details.");
 
             return BadRequest(new JSendResponse
             {
@@ -89,19 +90,19 @@ public class SportController : ControllerBase
 
     [HttpPut("{id:int}")]
     [SwaggerOperation(
-        Summary = "Updates an existing sport in the database")]
-    public async Task<IActionResult> UpdateSportAsync([FromRoute] int id, [FromBody] SportRequest request)
+        Summary = "Updates an existing match in the database")]
+    public async Task<IActionResult> UpdateMatchAsync([FromRoute] int id, [FromBody] MatchRequest request)
     {
         try
         {
-            var sport = Map(request, id);
-            var data = await _logic.UpdateSportAsync(sport);
+            var match = Map(request, id);
+            var data = await _logic.UpdateMatchAsync(match);
 
             return Ok(new JSendResponse(data));
         }
         catch (ArgumentNullException ex)
         {
-            Log.Warning(ex, "Sport cannot be null. See exception for details.");
+            Log.Warning(ex, "Match cannot be null. See exception for details.");
 
             return BadRequest(new JSendResponse
             {
@@ -113,17 +114,17 @@ public class SportController : ControllerBase
 
     [HttpDelete("{id:int}")]
     [SwaggerOperation(
-        Summary = "Deletes an existing sport in the database")]
-    public async Task<IActionResult> DeleteSportAsync([FromRoute] int id)
+        Summary = "Deletes an existing match in the database")]
+    public async Task<IActionResult> DeleteMatchAsync([FromRoute] int id)
     {
         try
         {
-            await _logic.DeleteSportAsync(id);
+            await _logic.DeleteMatchAsync(id);
             return Ok(new JSendResponse());
         }
         catch (EntityNotFoundException ex)
         {
-            Log.Warning(ex, "Cannot delete a sport that does not exist in the database. See exception for details.");
+            Log.Warning(ex, "Cannot delete a match that does not exist in the database. See exception for details.");
 
             return BadRequest(new JSendResponse
             {
@@ -133,16 +134,16 @@ public class SportController : ControllerBase
         }
     }
 
-    private static Sport Map(SportRequest request, int id = 0)
+    private static Match Map(MatchRequest request, int id = 0)
     {
-        return new Sport
+        return new Match
         {
             Id = id,
-            Name = request.Name,
-            Description = request.Description,
-            MaxTeamSize = request.MaxTeamSize,
-            StartDate = request.StartDate,
-            EndDate = request.EndDate
+            HomeTeamId = request.HomeTeamId,
+            AwayTeamId = request.AwayTeamId,
+            LocationId = request.LocationId,
+            StartDateTime = request.StartDateTime,
+            EndDateTime = request.EndDateTime
         };
     }
 }

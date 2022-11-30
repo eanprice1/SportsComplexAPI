@@ -5,9 +5,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Serilog;
 using SportsComplex.API.Api.JSend;
-using SportsComplex.Logic;
 using SportsComplex.Logic.Exceptions;
 using SportsComplex.Logic.Interfaces;
+using SportsComplex.Logic.Logic;
 using SportsComplex.Logic.Repositories;
 using SportsComplex.Logic.Validators;
 using SportsComplex.Repository;
@@ -68,6 +68,10 @@ namespace SportsComplex.API
             services.AddTransient<ICoachWriteRepo, CoachWriteRepo>();
             services.AddTransient<ILocationReadRepo, LocationReadRepo>();
             services.AddTransient<ILocationWriteRepo, LocationWriteRepo>();
+            services.AddTransient<IMatchReadRepo, MatchReadRepo>();
+            services.AddTransient<IMatchWriteRepo, MatchWriteRepo>();
+            services.AddTransient<IPracticeReadRepo, PracticeReadRepo>();
+            services.AddTransient<IPracticeWriteRepo, PracticeWriteRepo>();
 
             //Logic
             services.AddTransient<IdValidator>();
@@ -77,12 +81,16 @@ namespace SportsComplex.API
             services.AddTransient<TeamValidator>();
             services.AddTransient<CoachValidator>();
             services.AddTransient<LocationValidator>();
+            services.AddTransient<MatchValidator>();
+            services.AddTransient<PracticeValidator>();
             services.AddTransient<IGuardianLogic, GuardianLogic>();
             services.AddTransient<IPlayerLogic, PlayerLogic>();
             services.AddTransient<ISportLogic, SportLogic>();
             services.AddTransient<ITeamLogic, TeamLogic>();
             services.AddTransient<ICoachLogic, CoachLogic>();
             services.AddTransient<ILocationLogic, LocationLogic>();
+            services.AddTransient<IMatchLogic, MatchLogic>();
+            services.AddTransient<IPracticeLogic, PracticeLogic>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
