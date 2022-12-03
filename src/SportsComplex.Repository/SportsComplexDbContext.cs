@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using SportsComplex.Logic.Models;
 using SportsComplex.Repository.Entities;
 
 namespace SportsComplex.Repository

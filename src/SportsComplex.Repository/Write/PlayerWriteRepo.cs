@@ -15,17 +15,17 @@ public class PlayerWriteRepo : IPlayerWriteRepo
         _dbContextOptions = dbContextOptions;
     }
 
-    public async Task<int> InsertPlayerAsync(Player player)
+    public async Task<int> InsertPlayerAsync(Player model)
     {
         await using var context = new SportsComplexDbContext(_dbContextOptions);
-        var playerToInsert = Map(player);
+        var entity = Map(model);
 
-        await context.Player.AddAsync(playerToInsert);
+        await context.Player.AddAsync(entity);
 
         try
         {
             await context.SaveChangesAsync();
-            return playerToInsert.Id;
+            return entity.Id;
         }
         catch (DbUpdateException ex)
         {
@@ -34,17 +34,17 @@ public class PlayerWriteRepo : IPlayerWriteRepo
         }
     }
 
-    public async Task<Player> UpdatePlayerAsync(Player player)
+    public async Task<Player> UpdatePlayerAsync(Player model)
     {
         await using var context = new SportsComplexDbContext(_dbContextOptions);
-        var playerToUpdate = Map(player);
+        var entity = Map(model);
 
-        context.Player.Update(playerToUpdate);
+        context.Player.Update(entity);
 
         try
         {
             await context.SaveChangesAsync();
-            return player;
+            return model;
         }
         catch (DbUpdateException ex)
         {
@@ -53,14 +53,14 @@ public class PlayerWriteRepo : IPlayerWriteRepo
         }
     }
 
-    public async Task DeletePlayerAsync(int playerId)
+    public async Task DeletePlayerAsync(int id)
     {
         await using var context = new SportsComplexDbContext(_dbContextOptions);
 
-        var entity = await context.Player.FindAsync(playerId);
+        var entity = await context.Player.FindAsync(id);
 
         if(entity == null)
-            throw new EntityNotFoundException($"Player with 'Id={playerId}' does not exist.");
+            throw new EntityNotFoundException($"Player with 'Id={id}' does not exist.");
 
         context.Player.Remove(entity);
 

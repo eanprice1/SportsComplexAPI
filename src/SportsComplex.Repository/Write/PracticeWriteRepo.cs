@@ -15,17 +15,17 @@ public class PracticeWriteRepo : IPracticeWriteRepo
         _dbContextOptions = dbContextOptions;
     }
 
-    public async Task<int> InsertPracticeAsync(Practice practice)
+    public async Task<int> InsertPracticeAsync(Practice model)
     {
         await using var context = new SportsComplexDbContext(_dbContextOptions);
-        var practiceToInsert = Map(practice);
+        var entity = Map(model);
 
-        await context.Practice.AddAsync(practiceToInsert);
+        await context.Practice.AddAsync(entity);
 
         try
         {
             await context.SaveChangesAsync();
-            return practiceToInsert.Id;
+            return entity.Id;
         }
         catch (DbUpdateException ex)
         {
@@ -34,17 +34,17 @@ public class PracticeWriteRepo : IPracticeWriteRepo
         }
     }
 
-    public async Task<Practice> UpdatePracticeAsync(Practice practice)
+    public async Task<Practice> UpdatePracticeAsync(Practice model)
     {
         await using var context = new SportsComplexDbContext(_dbContextOptions);
-        var practiceToUpdate = Map(practice);
+        var entity = Map(model);
 
-        context.Practice.Update(practiceToUpdate);
+        context.Practice.Update(entity);
 
         try
         {
             await context.SaveChangesAsync();
-            return practice;
+            return model;
         }
         catch (DbUpdateException ex)
         {
@@ -53,14 +53,14 @@ public class PracticeWriteRepo : IPracticeWriteRepo
         }
     }
 
-    public async Task DeletePracticeAsync(int practiceId)
+    public async Task DeletePracticeAsync(int id)
     {
         await using var context = new SportsComplexDbContext(_dbContextOptions);
 
-        var entity = await context.Practice.FindAsync(practiceId);
+        var entity = await context.Practice.FindAsync(id);
 
         if (entity == null)
-            throw new EntityNotFoundException($"Practice with 'Id={practiceId}' does not exist.");
+            throw new EntityNotFoundException($"Practice with 'Id={id}' does not exist.");
 
         context.Practice.Remove(entity);
 

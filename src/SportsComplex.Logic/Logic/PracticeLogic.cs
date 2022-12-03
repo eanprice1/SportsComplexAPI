@@ -40,12 +40,12 @@ public class PracticeLogic : IPracticeLogic
         return await _practiceReadRepo.GetPracticesAsync(filters);
     }
 
-    public async Task<Practice> GetPracticeById(int practiceId)
+    public async Task<Practice> GetPracticeById(int id)
     {
-        if (practiceId <= 0)
+        if (id <= 0)
             throw new InvalidRequestException("'PracticeId' must be greater than 0.");
 
-        return await _practiceReadRepo.GetPracticeByIdAsync(practiceId);
+        return await _practiceReadRepo.GetPracticeByIdAsync(id);
     }
 
     public async Task<Practice> AddPracticeAsync(Practice practice)
@@ -61,9 +61,9 @@ public class PracticeLogic : IPracticeLogic
         return await _practiceWriteRepo.UpdatePracticeAsync(practice);
     }
 
-    public async Task DeletePracticeAsync(int practiceId)
+    public async Task DeletePracticeAsync(int id)
     {
-        await _practiceWriteRepo.DeletePracticeAsync(practiceId);
+        await _practiceWriteRepo.DeletePracticeAsync(id);
     }
 
     private async Task ValidateAsync(Practice practice, bool checkId = false)

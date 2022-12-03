@@ -5,5 +5,5 @@ namespace SportsComplex.Logic.Repositories;
 public interface IPlayerReadRepo
 {
     Task<List<Player>> GetPlayersAsync(PlayerQuery filters);
-    Task<Player> GetPlayerByIdAsync(int playerId);
+    Task<Player> GetPlayerByIdAsync(int id);
 }

@@ -15,17 +15,17 @@ public class TeamWriteRepo : ITeamWriteRepo
         _dbContextOptions = dbContextOptions;
     }
 
-    public async Task<int> InsertTeamAsync(Team team)
+    public async Task<int> InsertTeamAsync(Team model)
     {
         await using var context = new SportsComplexDbContext(_dbContextOptions);
-        var teamToInsert = Map(team);
+        var entity = Map(model);
 
-        await context.Team.AddAsync(teamToInsert);
+        await context.Team.AddAsync(entity);
 
         try
         {
             await context.SaveChangesAsync();
-            return teamToInsert.Id;
+            return entity.Id;
         }
         catch (DbUpdateException ex)
         {
@@ -34,17 +34,17 @@ public class TeamWriteRepo : ITeamWriteRepo
         }
     }
 
-    public async Task<Team> UpdateTeamAsync(Team team)
+    public async Task<Team> UpdateTeamAsync(Team model)
     {
         await using var context = new SportsComplexDbContext(_dbContextOptions);
-        var teamToUpdate = Map(team);
+        var entity = Map(model);
 
-        context.Team.Update(teamToUpdate);
+        context.Team.Update(entity);
 
         try
         {
             await context.SaveChangesAsync();
-            return team;
+            return model;
         }
         catch (DbUpdateException ex)
         {
@@ -53,7 +53,7 @@ public class TeamWriteRepo : ITeamWriteRepo
         }
     }
 
-    public async Task DeleteTeamAsync(int teamId)
+    public async Task DeleteTeamAsync(int id)
     {
         await using var context = new SportsComplexDbContext(_dbContextOptions);
         var trx = await context.Database.BeginTransactionAsync();
@@ -62,11 +62,11 @@ public class TeamWriteRepo : ITeamWriteRepo
             .Include(x => x.HomeMatches)
             .Include(x => x.AwayMatches)
             .Include(x => x.Practices)
-            .Where(x => x.Id == teamId)
+            .Where(x => x.Id == id)
             .SingleOrDefaultAsync();
 
         if (entity == null)
-            throw new EntityNotFoundException($"Team with 'Id={teamId}' does not exist.");
+            throw new EntityNotFoundException($"Team with 'Id={id}' does not exist.");
 
         context.Match.RemoveRange(entity.AwayMatches);
         context.Match.RemoveRange(entity.HomeMatches);

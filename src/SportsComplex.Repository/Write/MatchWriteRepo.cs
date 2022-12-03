@@ -15,17 +15,17 @@ public class MatchWriteRepo : IMatchWriteRepo
         _dbContextOptions = dbContextOptions;
     }
 
-    public async Task<int> InsertMatchAsync(Match match)
+    public async Task<int> InsertMatchAsync(Match model)
     {
         await using var context = new SportsComplexDbContext(_dbContextOptions);
-        var matchToInsert = Map(match);
+        var entity = Map(model);
 
-        await context.Match.AddAsync(matchToInsert);
+        await context.Match.AddAsync(entity);
 
         try
         {
             await context.SaveChangesAsync();
-            return matchToInsert.Id;
+            return entity.Id;
         }
         catch (DbUpdateException ex)
         {
@@ -34,17 +34,17 @@ public class MatchWriteRepo : IMatchWriteRepo
         }
     }
 
-    public async Task<Match> UpdateMatchAsync(Match match)
+    public async Task<Match> UpdateMatchAsync(Match model)
     {
         await using var context = new SportsComplexDbContext(_dbContextOptions);
-        var matchToUpdate = Map(match);
+        var entity = Map(model);
 
-        context.Match.Update(matchToUpdate);
+        context.Match.Update(entity);
 
         try
         {
             await context.SaveChangesAsync();
-            return match;
+            return model;
         }
         catch (DbUpdateException ex)
         {
@@ -53,14 +53,14 @@ public class MatchWriteRepo : IMatchWriteRepo
         }
     }
 
-    public async Task DeleteMatchAsync(int matchId)
+    public async Task DeleteMatchAsync(int id)
     {
         await using var context = new SportsComplexDbContext(_dbContextOptions);
 
-        var entity = await context.Match.FindAsync(matchId);
+        var entity = await context.Match.FindAsync(id);
 
         if (entity == null)
-            throw new EntityNotFoundException($"Match with 'Id={matchId}' does not exist.");
+            throw new EntityNotFoundException($"Match with 'Id={id}' does not exist.");
 
         context.Match.Remove(entity);
 

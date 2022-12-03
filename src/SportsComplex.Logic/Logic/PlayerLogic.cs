@@ -36,12 +36,12 @@ namespace SportsComplex.Logic.Logic
             return await _playerReadRepo.GetPlayersAsync(filters);
         }
 
-        public async Task<Player> GetPlayerByIdAsync(int playerId)
+        public async Task<Player> GetPlayerByIdAsync(int id)
         {
-            if (playerId <= 0)
+            if (id <= 0)
                 throw new InvalidRequestException("'PlayerId' must be greater than 0.");
 
-            return await _playerReadRepo.GetPlayerByIdAsync(playerId);
+            return await _playerReadRepo.GetPlayerByIdAsync(id);
         }
 
         public async Task<Player> AddPlayerAsync(Player player)
@@ -61,9 +61,9 @@ namespace SportsComplex.Logic.Logic
             return await _playerWriteRepo.UpdatePlayerAsync(player);
         }
 
-        public async Task DeletePlayerAsync(int playerId)
+        public async Task DeletePlayerAsync(int id)
         {
-            await _playerWriteRepo.DeletePlayerAsync(playerId);
+            await _playerWriteRepo.DeletePlayerAsync(id);
         }
 
         private async Task ValidateAsync(Player player, bool checkId = false)

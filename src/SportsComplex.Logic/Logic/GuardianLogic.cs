@@ -29,12 +29,12 @@ namespace SportsComplex.Logic.Logic
             return await _readRepo.GetGuardiansAsync(filters);
         }
 
-        public async Task<Guardian> GetGuardianByIdAsync(int guardianId)
+        public async Task<Guardian> GetGuardianByIdAsync(int id)
         {
-            if (guardianId <= 0)
+            if (id <= 0)
                 throw new InvalidRequestException("'GuardianId' must be greater than 0.");
 
-            return await _readRepo.GetGuardianByIdAsync(guardianId);
+            return await _readRepo.GetGuardianByIdAsync(id);
         }
 
         public async Task<Guardian> AddGuardianAsync(Guardian guardian)
@@ -51,9 +51,9 @@ namespace SportsComplex.Logic.Logic
             return await _writeRepo.UpdateGuardianAsync(guardian);
         }
 
-        public async Task DeleteGuardianAsync(int guardianId)
+        public async Task DeleteGuardianAsync(int id)
         {
-            await _writeRepo.DeleteGuardianAsync(guardianId);
+            await _writeRepo.DeleteGuardianAsync(id);
         }
 
         private async Task ValidateAsync(Guardian guardian, bool checkId = false)

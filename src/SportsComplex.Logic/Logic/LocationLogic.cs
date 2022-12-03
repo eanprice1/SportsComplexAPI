@@ -28,12 +28,12 @@ public class LocationLogic : ILocationLogic
         return await _locationReadRepo.GetLocationsAsync(filters);
     }
 
-    public async Task<Location> GetLocationByIdAsync(int locationId)
+    public async Task<Location> GetLocationByIdAsync(int id)
     {
-        if (locationId <= 0)
+        if (id <= 0)
             throw new InvalidRequestException("'LocationId' must be greater than 0.");
 
-        return await _locationReadRepo.GetLocationByIdAsync(locationId);
+        return await _locationReadRepo.GetLocationByIdAsync(id);
     }
 
     public async Task<Location> AddLocationAsync(Location location)
@@ -49,9 +49,9 @@ public class LocationLogic : ILocationLogic
         return await _locationWriteRepo.UpdateLocationAsync(location);
     }
 
-    public async Task DeleteLocationAsync(int locationId)
+    public async Task DeleteLocationAsync(int id)
     {
-        await _locationWriteRepo.DeleteLocationAsync(locationId);
+        await _locationWriteRepo.DeleteLocationAsync(id);
     }
 
     private async Task ValidateAsync(Location location, bool checkId = false)

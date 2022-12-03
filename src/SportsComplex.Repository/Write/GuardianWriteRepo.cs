@@ -15,17 +15,17 @@ namespace SportsComplex.Repository.Write
             _dbContextOptions = dbContextOptions;
         }
 
-        public async Task<int> InsertGuardianAsync(Guardian guardian)
+        public async Task<int> InsertGuardianAsync(Guardian model)
         {
             await using var context = new SportsComplexDbContext(_dbContextOptions);
-            var guardianToInsert = Map(guardian);
+            var entity = Map(model);
 
-            await context.Guardian.AddAsync(guardianToInsert);
+            await context.Guardian.AddAsync(entity);
 
             try
             {
                 await context.SaveChangesAsync();
-                return guardianToInsert.Id;
+                return entity.Id;
             }
             catch (DbUpdateException ex)
             {
@@ -34,17 +34,17 @@ namespace SportsComplex.Repository.Write
             }
         }
 
-        public async Task<Guardian> UpdateGuardianAsync(Guardian guardian)
+        public async Task<Guardian> UpdateGuardianAsync(Guardian model)
         {
             await using var context = new SportsComplexDbContext(_dbContextOptions);
-            var guardianToUpdate = Map(guardian);
+            var entity = Map(model);
 
-            context.Guardian.Update(guardianToUpdate);
+            context.Guardian.Update(entity);
 
             try
             {
                 await context.SaveChangesAsync();
-                return guardian;
+                return model;
             }
             catch (DbUpdateException ex)
             {
@@ -53,22 +53,23 @@ namespace SportsComplex.Repository.Write
             }
         }
 
-        public async Task DeleteGuardianAsync(int guardianId)
+        public async Task DeleteGuardianAsync(int id)
         {
             await using var context = new SportsComplexDbContext(_dbContextOptions);
 
             var entity = await context.Guardian
                 .Include(x => x.Players)
                 .Include(x => x.EmergencyContacts)
-                .Where(x => x.Id == guardianId)
+                .Where(x => x.Id == id)
                 .SingleOrDefaultAsync();
 
             if (entity == null)
-                throw new EntityNotFoundException($"Guardian with 'Id={guardianId}' does not exist.");
+                throw new EntityNotFoundException($"Guardian with 'Id={id}' does not exist.");
 
             if (entity.Players.Any(x => x.TeamId != null))
                 throw new DbWriteEntityException("Cannot delete guardian if referenced by one or more players.");
 
+            context.EmergencyContact.RemoveRange(entity.EmergencyContacts);
             context.Guardian.Remove(entity);
 
             try

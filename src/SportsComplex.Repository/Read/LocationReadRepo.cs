@@ -42,16 +42,16 @@ public class LocationReadRepo : ILocationReadRepo
         return await sqlQuery.Select(x => Map(x)).ToListAsync();
     }
 
-    public async Task<Location> GetLocationByIdAsync(int locationId)
+    public async Task<Location> GetLocationByIdAsync(int id)
     {
         await using var context = new SportsComplexDbContext(_dbContextOptions);
 
         var entity = await context.Location.AsNoTracking()
-            .Where(x => x.Id == locationId)
+            .Where(x => x.Id == id)
             .FirstOrDefaultAsync();
 
         if(entity == null)
-            throw new EntityNotFoundException($"Could not find location with 'Id={locationId}' in database.");
+            throw new EntityNotFoundException($"Could not find location with 'Id={id}' in database.");
 
         return Map(entity);
     }

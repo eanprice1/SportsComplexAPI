@@ -40,12 +40,12 @@ public class MatchLogic : IMatchLogic
         return await _matchReadRepo.GetMatchesAsync(filters);
     }
 
-    public async Task<Match> GetMatchById(int matchId)
+    public async Task<Match> GetMatchById(int id)
     {
-        if(matchId <= 0)
+        if(id <= 0)
             throw new InvalidRequestException("'MatchId' must be greater than 0.");
 
-        return await _matchReadRepo.GetMatchByIdAsync(matchId);
+        return await _matchReadRepo.GetMatchByIdAsync(id);
     }
 
     public async Task<Match> AddMatchAsync(Match match)
@@ -61,9 +61,9 @@ public class MatchLogic : IMatchLogic
         return await _matchWriteRepo.UpdateMatchAsync(match);
     }
 
-    public async Task DeleteMatchAsync(int matchId)
+    public async Task DeleteMatchAsync(int id)
     {
-        await _matchWriteRepo.DeleteMatchAsync(matchId);
+        await _matchWriteRepo.DeleteMatchAsync(id);
     }
 
     private async Task ValidateAsync(Match match, bool checkId = false)

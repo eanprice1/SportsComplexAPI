@@ -43,16 +43,16 @@ public class PracticeReadRepo : IPracticeReadRepo
         return await sqlQuery.Select(x => Map(x)).ToListAsync();
     }
 
-    public async Task<Practice> GetPracticeByIdAsync(int practiceId)
+    public async Task<Practice> GetPracticeByIdAsync(int id)
     {
         await using var context = new SportsComplexDbContext(_dbContextOptions);
 
         var entity = await context.Practice.AsNoTracking()
-            .Where(x => x.Id == practiceId)
+            .Where(x => x.Id == id)
             .FirstOrDefaultAsync();
 
         if (entity == null)
-            throw new EntityNotFoundException($"Could not find practice with 'Id={practiceId}' in database.");
+            throw new EntityNotFoundException($"Could not find practice with 'Id={id}' in database.");
 
         return Map(entity);
     }

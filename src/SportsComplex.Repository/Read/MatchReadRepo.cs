@@ -45,16 +45,16 @@ public class MatchReadRepo : IMatchReadRepo
         return await sqlQuery.Select(x => Map(x)).ToListAsync();
     }
 
-    public async Task<Match> GetMatchByIdAsync(int matchId)
+    public async Task<Match> GetMatchByIdAsync(int id)
     {
         await using var context = new SportsComplexDbContext(_dbContextOptions);
 
         var entity = await context.Match.AsNoTracking()
-            .Where(x => x.Id == matchId)
+            .Where(x => x.Id == id)
             .FirstOrDefaultAsync();
 
         if (entity == null)
-            throw new EntityNotFoundException($"Could not find match with 'Id={matchId}' in database.");
+            throw new EntityNotFoundException($"Could not find match with 'Id={id}' in database.");
 
         return Map(entity);
     }

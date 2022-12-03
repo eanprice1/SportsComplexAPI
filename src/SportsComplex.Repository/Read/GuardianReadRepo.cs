@@ -38,16 +38,16 @@ namespace SportsComplex.Repository.Read
             return await sqlQuery.Select(x => Map(x)).ToListAsync();
         }
 
-        public async Task<Guardian> GetGuardianByIdAsync(int guardianId)
+        public async Task<Guardian> GetGuardianByIdAsync(int id)
         {
             await using var context = new SportsComplexDbContext(_dbContextOptions);
 
             var entity = await context.Guardian.AsNoTracking()
-                .Where(x => x.Id == guardianId)
+                .Where(x => x.Id == id)
                 .FirstOrDefaultAsync();
 
             if (entity == null)
-                throw new EntityNotFoundException($"Could not find guardian with 'Id={guardianId}' in database.");
+                throw new EntityNotFoundException($"Could not find guardian with 'Id={id}' in database.");
 
             return Map(entity);
         }

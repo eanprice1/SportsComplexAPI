@@ -15,17 +15,17 @@ public class LocationWriteRepo : ILocationWriteRepo
         _dbContextOptions = dbContextOptions;
     }
 
-    public async Task<int> InsertLocationAsync(Location location)
+    public async Task<int> InsertLocationAsync(Location model)
     {
         await using var context = new SportsComplexDbContext(_dbContextOptions);
-        var locationToInsert = Map(location);
+        var entity = Map(model);
 
-        await context.Location.AddAsync(locationToInsert);
+        await context.Location.AddAsync(entity);
 
         try
         {
             await context.SaveChangesAsync();
-            return locationToInsert.Id;
+            return entity.Id;
         }
         catch (DbUpdateException ex)
         {
@@ -34,17 +34,17 @@ public class LocationWriteRepo : ILocationWriteRepo
         }
     }
 
-    public async Task<Location> UpdateLocationAsync(Location location)
+    public async Task<Location> UpdateLocationAsync(Location model)
     {
         await using var context = new SportsComplexDbContext(_dbContextOptions);
-        var locationToUpdate = Map(location);
+        var entity = Map(model);
 
-        context.Location.Update(locationToUpdate);
+        context.Location.Update(entity);
 
         try
         {
             await context.SaveChangesAsync();
-            return location;
+            return model;
         }
         catch (DbUpdateException ex)
         {
@@ -53,14 +53,14 @@ public class LocationWriteRepo : ILocationWriteRepo
         }
     }
 
-    public async Task DeleteLocationAsync(int locationId)
+    public async Task DeleteLocationAsync(int id)
     {
         await using var context = new SportsComplexDbContext(_dbContextOptions);
 
-        var entity = await context.Location.FindAsync(locationId);
+        var entity = await context.Location.FindAsync(id);
 
         if (entity == null)
-            throw new EntityNotFoundException($"Location with 'Id={locationId}' does not exist.");
+            throw new EntityNotFoundException($"Location with 'Id={id}' does not exist.");
 
         context.Location.Remove(entity);
 

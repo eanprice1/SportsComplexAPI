@@ -6,21 +6,21 @@ using SportsComplex.Repository.Entities;
 
 namespace SportsComplex.Repository.Write;
 
-public class CoachWriteRepo : ICoachWriteRepo
+public class EmergencyContactWriteRepo : IEmergencyContactWriteRepo
 {
     private readonly DbContextOptions<SportsComplexDbContext> _dbContextOptions;
 
-    public CoachWriteRepo(DbContextOptions<SportsComplexDbContext> dbContextOptions)
+    public EmergencyContactWriteRepo(DbContextOptions<SportsComplexDbContext> dbContextOptions)
     {
         _dbContextOptions = dbContextOptions;
     }
 
-    public async Task<int> InsertCoachAsync(Coach model)
+    public async Task<int> InsertEmergencyContactAsync(EmergencyContact model)
     {
         await using var context = new SportsComplexDbContext(_dbContextOptions);
         var entity = Map(model);
 
-        await context.Coach.AddAsync(entity);
+        await context.EmergencyContact.AddAsync(entity);
 
         try
         {
@@ -30,16 +30,16 @@ public class CoachWriteRepo : ICoachWriteRepo
         catch (DbUpdateException ex)
         {
             throw new DbWriteEntityException(
-                "Could not insert coach into database. See inner exception for details.", ex);
+                "Could not insert emergency contact into database. See inner exception for details.", ex);
         }
     }
 
-    public async Task<Coach> UpdateCoachAsync(Coach model)
+    public async Task<EmergencyContact> UpdateEmergencyContactAsync(EmergencyContact model)
     {
         await using var context = new SportsComplexDbContext(_dbContextOptions);
         var entity = Map(model);
 
-        context.Coach.Update(entity);
+        context.EmergencyContact.Update(entity);
 
         try
         {
@@ -49,20 +49,20 @@ public class CoachWriteRepo : ICoachWriteRepo
         catch (DbUpdateException ex)
         {
             throw new DbWriteEntityException(
-                "Could not update coach. Coach may not exist in database. See inner exception for details.", ex);
+                "Could not update emergency contact. Emergency contact may not exist in database. See inner exception for details.", ex);
         }
     }
 
-    public async Task DeleteCoachAsync(int id)
+    public async Task DeleteEmergencyContactAsync(int id)
     {
         await using var context = new SportsComplexDbContext(_dbContextOptions);
 
-        var entity = await context.Coach.FindAsync(id);
+        var entity = await context.EmergencyContact.FindAsync(id);
 
         if (entity == null)
-            throw new EntityNotFoundException($"Coach with 'Id={id}' does not exist.");
+            throw new EntityNotFoundException($"Emergency contact with 'Id={id}' does not exist.");
 
-        context.Coach.Remove(entity);
+        context.EmergencyContact.Remove(entity);
 
         try
         {
@@ -71,23 +71,24 @@ public class CoachWriteRepo : ICoachWriteRepo
         catch (DbUpdateException ex)
         {
             throw new DbWriteEntityException(
-                "Could not delete coach. See inner exception for details.", ex);
+                "Could not delete emergency contact. See inner exception for details.", ex);
         }
     }
 
-    private static CoachDb Map(Coach model)
+    private static EmergencyContactDb Map(EmergencyContact model)
     {
-        return new CoachDb
+        return new EmergencyContactDb
         {
             Id = model.Id,
-            TeamId = model.TeamId,
+            GuardianId = model.GuardianId,
             FirstName = model.FirstName,
             LastName = model.LastName,
             BirthDate = model.BirthDate,
             PhoneNumber = model.PhoneNumber,
             Email = model.Email,
             Address = model.Address,
-            IsHeadCoach = model.IsHeadCoach
+            OtherAddress = model.OtherAddress,
+            OtherPhoneNumber = model.OtherPhoneNumber
         };
     }
 }

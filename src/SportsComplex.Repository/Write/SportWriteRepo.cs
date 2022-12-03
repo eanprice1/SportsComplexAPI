@@ -15,17 +15,17 @@ public class SportWriteRepo : ISportWriteRepo
         _dbContextOptions = dbContextOptions;
     }
 
-    public async Task<int> InsertSportAsync(Sport sport)
+    public async Task<int> InsertSportAsync(Sport model)
     {
         await using var context = new SportsComplexDbContext(_dbContextOptions);
-        var sportToInsert = Map(sport);
+        var entity = Map(model);
 
-        await context.Sport.AddAsync(sportToInsert);
+        await context.Sport.AddAsync(entity);
 
         try
         {
             await context.SaveChangesAsync();
-            return sportToInsert.Id;
+            return entity.Id;
         }
         catch (DbUpdateException ex)
         {
@@ -34,31 +34,31 @@ public class SportWriteRepo : ISportWriteRepo
         }
     }
 
-    public async Task<Sport> UpdateSportAsync(Sport sport)
+    public async Task<Sport> UpdateSportAsync(Sport model)
     {
         await using var context = new SportsComplexDbContext(_dbContextOptions);
-        var sportToUpdate = Map(sport);
+        var entity = Map(model);
 
-        var entity = await context.Sport.AsNoTracking()
+        var results = await context.Sport.AsNoTracking()
             .Include(x => x.Teams)
             .ThenInclude(x => x.Players)
-            .Where(x => x.Id == sportToUpdate.Id)
+            .Where(x => x.Id == entity.Id)
             .FirstOrDefaultAsync();
 
-        if (entity == null)
-            throw new EntityNotFoundException($"Sport with 'Id={sportToUpdate.Id}' does not exist in database.");
+        if (results == null)
+            throw new EntityNotFoundException($"Sport with 'Id={entity.Id}' does not exist in database.");
 
 
-        if (entity.Teams.Any(x => x.Players.Count > entity.MaxTeamSize))
+        if (results.Teams.Any(x => x.Players.Count > results.MaxTeamSize))
             throw new InvalidRequestException(
                 "'MaxTeamSize' must be greater than or equal to the player count of all existing teams.");
 
-        context.Sport.Update(sportToUpdate);
+        context.Sport.Update(entity);
 
         try
         {
             await context.SaveChangesAsync();
-            return sport;
+            return model;
         }
         catch (DbUpdateException ex)
         {
@@ -67,7 +67,7 @@ public class SportWriteRepo : ISportWriteRepo
         }
     }
 
-    public async Task DeleteSportAsync(int sportId)
+    public async Task DeleteSportAsync(int id)
     {
         await using var context = new SportsComplexDbContext(_dbContextOptions);
         var trx = await context.Database.BeginTransactionAsync();
@@ -80,11 +80,11 @@ public class SportWriteRepo : ISportWriteRepo
             .Include(x => x.Teams)
             .ThenInclude(x => x.Practices)
             .Include(x => x.Locations)
-            .Where(x => x.Id == sportId)
+            .Where(x => x.Id == id)
             .SingleOrDefaultAsync();
 
         if (entity == null)
-            throw new EntityNotFoundException($"Sport with 'Id={sportId}' does not exist.");
+            throw new EntityNotFoundException($"Sport with 'Id={id}' does not exist.");
 
 
         foreach (var team in entity.Teams)

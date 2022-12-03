@@ -28,12 +28,12 @@ public class TeamLogic : ITeamLogic
         return await _teamReadRepo.GetTeamsAsync(filters);
     }
 
-    public async Task<Team> GetTeamByIdAsync(int teamId)
+    public async Task<Team> GetTeamByIdAsync(int id)
     {
-        if (teamId <= 0)
+        if (id <= 0)
             throw new InvalidRequestException("'TeamId' must be greater than 0.");
 
-        return await _teamReadRepo.GetTeamByIdAsync(teamId);
+        return await _teamReadRepo.GetTeamByIdAsync(id);
     }
 
     public async Task<Team> AddTeamAsync(Team team)
@@ -49,9 +49,9 @@ public class TeamLogic : ITeamLogic
         return await _teamWriteRepo.UpdateTeamAsync(team);
     }
 
-    public async Task DeleteTeamAsync(int teamId)
+    public async Task DeleteTeamAsync(int id)
     {
-        await _teamWriteRepo.DeleteTeamAsync(teamId);
+        await _teamWriteRepo.DeleteTeamAsync(id);
     }
 
     private async Task ValidateAsync(Team team, bool checkId = false)

@@ -4,7 +4,7 @@ namespace SportsComplex.Logic.Repositories;
 
 public interface IPlayerWriteRepo
 {
-    Task<int> InsertPlayerAsync(Player player);
-    Task<Player> UpdatePlayerAsync(Player player);
-    Task DeletePlayerAsync(int playerId);
+    Task<int> InsertPlayerAsync(Player model);
+    Task<Player> UpdatePlayerAsync(Player model);
+    Task DeletePlayerAsync(int id);
 }

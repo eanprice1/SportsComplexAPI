@@ -34,12 +34,12 @@ public class SportLogic : ISportLogic
         return await _readRepo.GetSportsAsync(filters);
     }
 
-    public async Task<Sport> GetSportByIdAsync(int sportId)
+    public async Task<Sport> GetSportByIdAsync(int id)
     {
-        if (sportId <= 0)
+        if (id <= 0)
             throw new InvalidRequestException("'SportId' must be greater than 0.");
 
-        return await _readRepo.GetSportByIdAsync(sportId);
+        return await _readRepo.GetSportByIdAsync(id);
     }
 
     public async Task<Sport> AddSportAsync(Sport sport)
@@ -55,9 +55,9 @@ public class SportLogic : ISportLogic
         return await _writeRepo.UpdateSportAsync(sport);
     }
 
-    public async Task DeleteSportAsync(int sportId)
+    public async Task DeleteSportAsync(int id)
     {
-        await _writeRepo.DeleteSportAsync(sportId);
+        await _writeRepo.DeleteSportAsync(id);
     }
 
     private async Task ValidateAsync(Sport sport, bool checkId = false)

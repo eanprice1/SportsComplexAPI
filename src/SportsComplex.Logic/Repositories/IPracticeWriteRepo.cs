@@ -4,7 +4,7 @@ namespace SportsComplex.Logic.Repositories;
 
 public interface IPracticeWriteRepo
 {
-    Task<int> InsertPracticeAsync(Practice practice);
-    Task<Practice> UpdatePracticeAsync(Practice practice);
-    Task DeletePracticeAsync(int practiceId);
+    Task<int> InsertPracticeAsync(Practice model);
+    Task<Practice> UpdatePracticeAsync(Practice model);
+    Task DeletePracticeAsync(int id);
 }

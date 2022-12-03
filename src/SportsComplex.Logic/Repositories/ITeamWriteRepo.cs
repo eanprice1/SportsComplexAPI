@@ -4,7 +4,7 @@ namespace SportsComplex.Logic.Repositories;
 
 public interface ITeamWriteRepo
 {
-    Task<int> InsertTeamAsync(Team team);
-    Task<Team> UpdateTeamAsync(Team team);
-    Task DeleteTeamAsync(int teamId);
+    Task<int> InsertTeamAsync(Team model);
+    Task<Team> UpdateTeamAsync(Team model);
+    Task DeleteTeamAsync(int id);
 }

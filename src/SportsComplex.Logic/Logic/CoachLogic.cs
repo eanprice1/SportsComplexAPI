@@ -28,12 +28,12 @@ public class CoachLogic : ICoachLogic
         return await _coachReadRepo.GetCoachesAsync(filters);
     }
 
-    public async Task<Coach> GetCoachById(int coachId)
+    public async Task<Coach> GetCoachById(int id)
     {
-        if (coachId <= 0)
+        if (id <= 0)
             throw new InvalidRequestException("'CoachId' must be greater than 0.");
 
-        return await _coachReadRepo.GetCoachByIdAsync(coachId);
+        return await _coachReadRepo.GetCoachByIdAsync(id);
     }
 
     public async Task<Coach> AddCoachAsync(Coach coach)
@@ -49,9 +49,9 @@ public class CoachLogic : ICoachLogic
         return await _coachWriteRepo.UpdateCoachAsync(coach);
     }
 
-    public async Task DeleteCoachAsync(int coachId)
+    public async Task DeleteCoachAsync(int id)
     {
-        await _coachWriteRepo.DeleteCoachAsync(coachId);
+        await _coachWriteRepo.DeleteCoachAsync(id);
     }
 
     private async Task ValidateAsync(Coach coach, bool checkId = false)

@@ -4,7 +4,7 @@ namespace SportsComplex.Logic.Repositories;
 
 public interface ICoachWriteRepo
 {
-    Task<int> InsertCoachAsync(Coach coach);
-    Task<Coach> UpdateCoachAsync(Coach coach);
-    Task DeleteCoachAsync(int coachId);
+    Task<int> InsertCoachAsync(Coach model);
+    Task<Coach> UpdateCoachAsync(Coach model);
+    Task DeleteCoachAsync(int id);
 }

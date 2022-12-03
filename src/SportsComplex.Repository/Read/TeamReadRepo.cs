@@ -38,16 +38,16 @@ public class TeamReadRepo : ITeamReadRepo
         return await sqlQuery.Select(x => Map(x)).ToListAsync();
     }
 
-    public async Task<Team> GetTeamByIdAsync(int teamId)
+    public async Task<Team> GetTeamByIdAsync(int id)
     {
         await using var context = new SportsComplexDbContext(_dbContextOptions);
 
         var entity = await context.Team.AsNoTracking()
-            .Where(x => x.Id == teamId)
+            .Where(x => x.Id == id)
             .FirstOrDefaultAsync();
 
         if(entity == null)
-            throw new EntityNotFoundException($"Could not find team with 'Id={teamId}' in database.");
+            throw new EntityNotFoundException($"Could not find team with 'Id={id}' in database.");
 
         return Map(entity);
     }

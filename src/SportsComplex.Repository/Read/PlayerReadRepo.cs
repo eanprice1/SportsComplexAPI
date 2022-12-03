@@ -47,16 +47,16 @@ namespace SportsComplex.Repository.Read
             return await sqlQuery.Select(x => Map(x)).ToListAsync();
         }
 
-        public async Task<Player> GetPlayerByIdAsync(int playerId)
+        public async Task<Player> GetPlayerByIdAsync(int id)
         {
             await using var context = new SportsComplexDbContext(_dbContextOptions);
 
             var entity = await context.Player.AsNoTracking()
-                .Where(x => x.Id == playerId)
+                .Where(x => x.Id == id)
             .FirstOrDefaultAsync();
 
             if(entity == null)
-                throw new EntityNotFoundException($"Could not find player with 'Id={playerId}' in database.");
+                throw new EntityNotFoundException($"Could not find player with 'Id={id}' in database.");
 
             return Map(entity);
         }

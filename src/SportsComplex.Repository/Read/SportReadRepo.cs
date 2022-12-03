@@ -40,16 +40,16 @@ public class SportReadRepo : ISportReadRepo
         return await sqlQuery.Select(x => Map(x)).ToListAsync();
     }
 
-    public async Task<Sport> GetSportByIdAsync(int sportId)
+    public async Task<Sport> GetSportByIdAsync(int id)
     {
         await using var context = new SportsComplexDbContext(_dbContextOptions);
 
         var entity = await context.Sport.AsNoTracking()
-            .Where(x => x.Id == sportId)
+            .Where(x => x.Id == id)
             .FirstOrDefaultAsync();
 
         if (entity == null)
-            throw new EntityNotFoundException($"Could not find sport with 'Id={sportId}' in database.");
+            throw new EntityNotFoundException($"Could not find sport with 'Id={id}' in database.");
 
         return Map(entity);
     }

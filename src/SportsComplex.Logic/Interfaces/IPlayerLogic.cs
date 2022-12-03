@@ -5,8 +5,8 @@ namespace SportsComplex.Logic.Interfaces;
 public interface IPlayerLogic
 {
     Task<List<Player>> GetPlayersAsync(PlayerQuery filters);
-    Task<Player> GetPlayerByIdAsync(int playerId);
+    Task<Player> GetPlayerByIdAsync(int id);
     Task<Player> AddPlayerAsync(Player player);
     Task<Player> UpdatePlayerAsync(Player player);
-    Task DeletePlayerAsync(int playerId);
+    Task DeletePlayerAsync(int id);
 }
